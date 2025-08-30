@@ -3,7 +3,7 @@ name: Bug report
 about: Faça um report sobre o bug encontrado
 title: "[BUG]"
 labels: bug
-assignees: Copilot
+assignees: []
 
 ---
 
