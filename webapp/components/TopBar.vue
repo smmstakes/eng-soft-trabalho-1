@@ -1,11 +1,11 @@
 <template>
     <div class="top-bar">
         <div class="app-title">
-            <img src="../public/logo.svg" alt="Logo do sistema">
+            <img src="../public/logo.svg" class="logo" alt="Logo do sistema">
             <h3>Sistema Scrum</h3>
         </div>
         <NuxtLink to="/configuracoes" class="profile">
-            <img :src="profileImage" alt="Perfil">
+            <img :src="profileImage" class="profile-image" alt="Perfil">
         </NuxtLink>
     </div>
 </template>
@@ -26,10 +26,9 @@ const profileImage = ref('') // TODO: Receber foto vinda da API depois
     align-items: center;
     justify-content: space-between;
     border-bottom: 2.5px solid #E5E5E5;
-
 }
 
-.top-bar img {
+.top-bar .logo {
     margin: 0px 25px;
 }
 
@@ -42,12 +41,15 @@ const profileImage = ref('') // TODO: Receber foto vinda da API depois
 }
 
 .top-bar .profile {
+    /* position: relative; */
     width: 40px;
     height: 40px;
     background-color: #4caf50;
     border-radius: 50%;
 
-
     margin-right: 25px;
+    justify-self: flex-start;
+    /* align-self: flex-start; */
 }
+
 </style>
