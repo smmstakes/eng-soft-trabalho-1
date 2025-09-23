@@ -12,7 +12,7 @@
 
 <style scoped>
 .top-bar {
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
     height: 65px;
     display: flex;
