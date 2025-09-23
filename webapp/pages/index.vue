@@ -14,6 +14,7 @@
 </template>
 
 <script setup>
+// TODO: Receber nome vindo da API depois
 const name = "Fulano"
 </script>
 

@@ -4,11 +4,17 @@
             <img src="../public/logo.svg" alt="Logo do sistema">
             <h3>Sistema Scrum</h3>
         </div>
-        <a class="profile">
-            <img src="" alt="">
-        </a>
+        <NuxtLink to="/configuracoes" class="profile">
+            <img :src="profileImage" alt="Perfil">
+        </NuxtLink>
     </div>
 </template>
+
+<script>
+import { ref } from 'vue'
+const profileImage = ref('') // TODO: Receber foto vinda da API depois
+
+</script>
 
 <style scoped>
 .top-bar {
