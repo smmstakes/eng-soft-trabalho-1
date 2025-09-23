@@ -1,7 +1,7 @@
 <template>
     <div class="top-bar">
         <div class="app-title">
-            <img src="../public/logo.svg" class="logo" alt="Logo do sistema">
+            <img src="/logo.svg" class="logo" alt="Logo do sistema">
             <h3>Sistema Scrum</h3>
         </div>
         <NuxtLink to="/configuracoes" class="profile">
