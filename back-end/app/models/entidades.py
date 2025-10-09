@@ -66,6 +66,7 @@ class Usuario :
     def to_dict(self):
         return {
             'nome': self._nome,
+            'cpf' : self.cpf,
             'email': self._email,
             'senha': self._senha
         }
