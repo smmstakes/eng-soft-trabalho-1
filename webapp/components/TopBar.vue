@@ -18,7 +18,6 @@ const profileImage = ref('') // TODO: Receber foto vinda da API depois
 
 <style scoped>
 .top-bar {
-    /* position: fixed; */
     width: 100%;
     height: 65px;
     display: flex;
@@ -41,7 +40,6 @@ const profileImage = ref('') // TODO: Receber foto vinda da API depois
 }
 
 .top-bar .profile {
-    /* position: relative; */
     width: 40px;
     height: 40px;
     background-color: #4caf50;
@@ -49,7 +47,6 @@ const profileImage = ref('') // TODO: Receber foto vinda da API depois
 
     margin-right: 25px;
     justify-self: flex-start;
-    /* align-self: flex-start; */
 }
 
 </style>
