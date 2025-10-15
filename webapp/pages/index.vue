@@ -29,7 +29,6 @@
 </template>
 
 <script setup>
-import Modal from '~/components/Modal.vue'
 import { ref } from 'vue'
 
 // TODO: Receber nome vindo da API depois
