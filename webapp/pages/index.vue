@@ -89,7 +89,7 @@ const showModal = ref(false)
 .choose-mode-buttons button:hover {
     color: black;
     transition-duration: 500ms;
-    background-color: #FFFF;
+    background-color: #FFFFFF;
     border: 1px solid #D4D4D4;
 
     cursor: pointer;
