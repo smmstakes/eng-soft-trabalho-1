@@ -1,1 +1,79 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="projetoScrum.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1816"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="funcao" custom_title="0" dock_id="1" table="4,6:mainfuncao"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011500ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1"></sql><current_tab id="0"/></tab_sql></sqlb_project>
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="teste.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="2277"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="0" parent="0"/><expanded_item id="1" parent="0"/><expanded_item id="2" parent="0"/><expanded_item id="3" parent="0"/><expanded_item id="4" parent="0"/><expanded_item id="5" parent="0"/><expanded_item id="6" parent="0"/><expanded_item id="7" parent="0"/><expanded_item id="8" parent="0"/><expanded_item id="9" parent="0"/><expanded_item id="10" parent="0"/><expanded_item id="11" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="estado_task" custom_title="0" dock_id="1" table="4,11:mainestado_task"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000001fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000011500ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE IF NOT EXISTS &quot;funcao&quot; (
+        &quot;nome_funcao&quot;   TEXT,
+        PRIMARY KEY(&quot;nome_funcao&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;usuario&quot; (
+        &quot;cpf&quot;   TEXT,
+        &quot;email&quot; TEXT NOT NULL,
+        &quot;nome&quot;  TEXT NOT NULL,
+        &quot;senha&quot; TEXT NOT NULL,
+        PRIMARY KEY(&quot;cpf&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;user_story&quot; (
+        &quot;id_user_story&quot; INTEGER,
+        &quot;id_projeto&quot;    INTEGER,
+        &quot;titulo_user_story&quot;     TEXT,
+        &quot;objetivo&quot;      TEXT,
+        &quot;beneficio&quot;     TEXT,
+        &quot;nivel_story&quot; TEXT,
+        PRIMARY KEY(&quot;id_user_story&quot; AUTOINCREMENT),
+        FOREIGN KEY(&quot;id_projeto&quot;) REFERENCES &quot;projeto&quot;(&quot;id_projeto&quot;),
+        FOREIGN KEY(&quot;nivel_story&quot;) REFERENCES &quot;prioridade_story&quot;(&quot;nivel_story&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;prioridade_story&quot;(
+        &quot;nivel_story&quot; TEXT,
+        PRIMARY KEY(&quot;nivel_story&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;task&quot; (
+        &quot;id_task&quot;       INTEGER,
+        &quot;id_sprint&quot;     INTEGER,
+        &quot;cpf&quot;   TEXT,
+        &quot;nome_estado&quot;   TEXT,
+        &quot;descricao_task&quot;        TEXT,
+        &quot;nivel_task&quot; TEXT,
+        PRIMARY KEY(&quot;id_task&quot; AUTOINCREMENT),
+        FOREIGN KEY(&quot;id_sprint&quot;) REFERENCES &quot;sprint&quot;(&quot;id_sprint&quot;),
+        FOREIGN KEY(&quot;nome_estado&quot;) REFERENCES &quot;estado_task&quot;(&quot;nome_estado&quot;),
+        FOREIGN KEY(&quot;nivel_task&quot;) REFERENCES &quot;prioridade_task&quot;(&quot;nivel_task&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;prioridade_task&quot;(
+        &quot;nivel_task&quot; TEXT,
+        PRIMARY KEY(&quot;nivel_task&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;estado_task&quot; (
+        &quot;nome_estado&quot;   TEXT,
+        PRIMARY KEY(&quot;nome_estado&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;sprint&quot; (
+        &quot;id_sprint&quot;     INTEGER,
+        &quot;meta&quot;  TEXT,
+        &quot;inicio&quot; DATE,
+        &quot;termino&quot; DATE,
+        &quot;revisao_sprint&quot;        TEXT,
+        PRIMARY KEY(&quot;id_sprint&quot; AUTOINCREMENT)
+);
+CREATE TABLE IF NOT EXISTS &quot;usuario_projeto&quot; (
+        &quot;cpf&quot;   TEXT,
+        &quot;id_projeto&quot;    INTEGER,
+        &quot;nome_funcao&quot;   TEXT,
+        PRIMARY KEY(&quot;cpf&quot;,&quot;id_projeto&quot;),
+        FOREIGN KEY(&quot;cpf&quot;) REFERENCES &quot;usuario&quot;(&quot;cpf&quot;),
+        FOREIGN KEY(&quot;id_projeto&quot;) REFERENCES &quot;projeto&quot;(&quot;id_projeto&quot;),
+        FOREIGN KEY(&quot;nome_funcao&quot;) REFERENCES &quot;funcao&quot;(&quot;nome_funcao&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;projeto&quot; (
+        &quot;id_projeto&quot;    INTEGER,
+        &quot;titulo_projeto&quot;        TEXT,
+        &quot;descricao&quot;     TEXT,
+        &quot;cpf&quot;   TEXT,
+        PRIMARY KEY(&quot;id_projeto&quot; AUTOINCREMENT),
+        FOREIGN KEY(&quot;cpf&quot;) REFERENCES &quot;usuario&quot;(&quot;cpf&quot;)
+);
+CREATE TABLE IF NOT EXISTS &quot;user_story_sprint&quot; (
+        &quot;id_user_story&quot; INTEGER,
+        &quot;id_sprint&quot; INTEGER, 
+        PRIMARY KEY(&quot;id_user_story&quot;, &quot;id_sprint&quot;),
+        FOREIGN KEY(&quot;id_user_story&quot;) REFERENCES &quot;user_story&quot;(&quot;id_user_story&quot;),
+        FOREIGN KEY(&quot;id_sprint&quot;) REFERENCES &quot;sprint&quot;(&quot;id_sprint&quot;)
+);</sql><current_tab id="0"/></tab_sql></sqlb_project>
