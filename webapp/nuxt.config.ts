@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
     head: {
+      title: "Sistema Scrum",
       link: [
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
@@ -16,5 +17,11 @@ export default defineNuxtConfig({
   },
   css: [
     "@/public/css/global.css"
+  ],
+  components: [
+    {
+      path: "~/components",
+      pathPrefix: false,
+    }
   ]
 })
