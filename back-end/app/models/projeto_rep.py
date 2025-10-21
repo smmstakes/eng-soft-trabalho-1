@@ -104,12 +104,3 @@ def deletar_usuario(projeto_id: int):
         if result.rowcount == 0:
             raise ValueError("Nenhum usuário encontrado com esse CPF.")
         print(f"Projeto id: {projeto_id} atualizado com sucesso!")
-    
-# adicionar_projeto("Projeto01","Primeiro Projeto de engenharia de Software do Jonas","234.567.890-11")
-# adicionar_projeto("Projeto02","Segundo Projeto de engenharia de Software do João","456.789.012-33")
-# print(listar_todos_projetos())
-print(buscar_projeto_por_id(2))
-# print(buscar_projetos_por_cpf_dono("234.567.890-11"))
-# atualizar_projeto(1,None,"Projeto Final de Engenharia de Software do Jonas")
-# print(buscar_projeto_por_id(1))
-# deletar_usuario(1)
