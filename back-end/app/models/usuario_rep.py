@@ -14,7 +14,6 @@ if usuario is None:
 
 # create (adiciona usuario ao bd)
 def adicionar_usuario(cpf, email, nome, senha):
-    # 1. VALIDAÇÃO DOS DADOS AQUI
     if not re.match(PADRAO_NOME, nome):
         raise ValueError ("Nome Inválido :\n"
                             "-Deve conter apenas letras e espaço, sem acentuação \n"
@@ -60,11 +59,6 @@ def buscar_usuario(cpf):
 
 #update (atualiza os dados do usuario)
 def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
-    """
-    Atualiza um usuário existente no banco com base no CPF.
-    Somente os campos informados (não nulos) serão atualizados.
-    """
-    # Cria um dicionário com os valores a atualizar
     novos_valores = {}
 
     if novo_email:
@@ -106,9 +100,3 @@ def deletar_usuario(cpf):
         if result.rowcount == 0:
             raise ValueError("Nenhum usuário encontrado com esse CPF.")
     print(f"Usuário com CPF {cpf} removido com sucesso!")
-
-#adicionar_usuario("123.456.789-00", "joao.alvares@yahoo.com.br", "Joao Alvares","$JoaoAlvares123")
-#atualizar_usuario("123.456.789-00", "joaozinho@yahoo.com.br", "Jaozin321@")
-#deletar_usuario("123.456.789-22")
-#print(listar_usuarios())
-#print(buscar_usuario("123.456.789-00"))
