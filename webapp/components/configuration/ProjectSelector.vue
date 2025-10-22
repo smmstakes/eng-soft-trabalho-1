@@ -137,7 +137,7 @@ const onProjectSelect = (project: Project) => {
 	border-radius: 8px;
 	cursor: pointer;
 	color: #171717;
-	font-size: 14px
+	font-size: 14px;
 }
 
 .project-list li:hover {
