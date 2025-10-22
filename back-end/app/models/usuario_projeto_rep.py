@@ -66,7 +66,6 @@ def listar_usuarios_em_projeto(projeto_id: int):
         lista_usuarios = [dict(row) for row in result.mappings()]
     return lista_usuarios
 
-#NAO FIZ LISTAR TODOS OS PARAMETROS DA TABELA USUARIO_PROJETO
 
 def atualizar_usuario_projeto(cpf: str, projeto_id: int, nova_funcao: str):
 
