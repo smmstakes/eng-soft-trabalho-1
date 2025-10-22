@@ -1,12 +1,13 @@
 name: esw-trabalho-1-env
 channels:
-  - conda-forge
   - defaults
 dependencies:
+  - supabase=2.18.1
   - python=3.13.5
+  - python-dotenv=1.1.1
   - pip=25.2
   - flask=3.1.2
   - psycopg2=2.9.10
   - psycopg2-binary=2.9.10
-  - python-dotenv=1.1.1
-  - supabase=2.18.1
+  - sqlalchemy=2.0.43
+  - sqlite=3.50.4
