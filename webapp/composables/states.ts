@@ -6,14 +6,11 @@ interface Project {
   sprintStatus: string;
 }
 
-export const useProject = 
-  () => useState<Project | null>('project', () => null);
+export const useProject = () => useState<Project | null>('project', () => null);
 
-export const useProjectsList = 
-  () => useState<Project[]>('projects-list', () => []);
+export const useProjectsList = () => useState<Project[]>('projects-list', () => []);
 
-export const useProjectPassword =
-  () => useState<string>('project-password', () => '');
+export const useProjectPassword = () => useState<string>('project-password', () => '');
 
 
 export type Role = 'Product Owner' | 'Scrum Master' | 'Desenvolvedor';
