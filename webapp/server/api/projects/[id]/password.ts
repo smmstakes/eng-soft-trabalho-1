@@ -21,10 +21,6 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 400, statusMessage: 'A senha deve ter pelo menos 8 caracteres e conter letras e números' });
     }
 
-      const projectId = event.context.params?.id;
-      if (!projectId) {
-        throw createError({ statusCode: 400, statusMessage: 'Necessário fornecer o ID do projeto' });
-      }
 
       passwordsByProject[projectId] = body.password;
 
