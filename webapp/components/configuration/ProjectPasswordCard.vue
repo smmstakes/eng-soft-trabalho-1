@@ -129,7 +129,7 @@ label {
   color: #3f3f46;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"]  {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #d4d4d8;
