@@ -12,7 +12,6 @@ usuario = metadata.tables.get("usuario")
 if usuario is None:
     raise Exception("Tabela 'usuario' não encontrada no banco.")
 
-# create (adiciona usuario ao bd)
 def adicionar_usuario(cpf, email, nome, senha):
     if not re.match(PADRAO_NOME, nome):
         raise ValueError ("Nome Inválido :\n"
@@ -39,7 +38,6 @@ def adicionar_usuario(cpf, email, nome, senha):
     with engine.begin() as conn:
         conn.execute(stmt)
 
-#read(busca todos os usuarios)       
 def listar_usuarios():
     with engine.connect() as conn:
         result = conn.execute(select(usuario))
@@ -57,7 +55,6 @@ def buscar_usuario(cpf):
         print("Nenhum usuário encontrado com esse CPF.")
         return None    
 
-#update (atualiza os dados do usuario)
 def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
     novos_valores = {}
 
@@ -91,7 +88,6 @@ def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
             raise ValueError("Nenhum usuário encontrado com esse CPF.")
         print(f"Usuário com CPF {cpf} atualizado com sucesso!")
 
-#delete (apaga os dados do usuario)
 def deletar_usuario(cpf):
     stmt = delete(usuario).where(usuario.c.cpf == cpf)
 
