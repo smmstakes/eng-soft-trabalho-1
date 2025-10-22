@@ -21,7 +21,7 @@
             </button>
         </div>
         
-        <small class="helper-text">Mínimo de 4 caracteres, incluindo números e letras</small>
+        <small class="helper-text">Mínimo de 8 caracteres, incluindo números e letras</small>
       </div>
 
       <div class="alert-info">
@@ -64,8 +64,8 @@ const updatePassword = async () => {
     return;
   }
   
-  if (newPassword.value.length < 4) {
-    toasts.warning('A senha deve ter no mínimo 4 caracteres.');
+  if (newPassword.value.length < 8) {
+    toasts.warning('A senha deve ter no mínimo 8 caracteres.');
     return;
   }
   
