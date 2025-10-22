@@ -1,0 +1,98 @@
+from connection import engine, metadata
+import re
+from sqlalchemy import select, insert, update, delete, text
+
+PADRAO_NOME = r"^[a-zA-Z\s]{2,20}$"
+PADRAO_SENHA = r"^(?=.*[A-Z])(?=.*[!@#$%&*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
+PADRAO_CPF = r"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$"
+PADRAO_EMAIL = r"^[A-Za-z0-9.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{,65}$"
+
+#reflete a tabela do bd
+usuario = metadata.tables.get("usuario")
+if usuario is None:
+    raise Exception("Tabela 'usuario' não encontrada no banco.")
+
+def adicionar_usuario(cpf, email, nome, senha):
+    if not re.match(PADRAO_NOME, nome):
+        raise ValueError ("Nome Inválido :\n"
+                            "-Deve conter apenas letras e espaço, sem acentuação \n"
+                            "-Deve conter entre 2 à 20 caracteres.")
+    if not re.match(PADRAO_EMAIL, email):
+        raise ValueError("Email Inválido :\n" \
+                            "- Deve conter padrao email : parte-local@dominio \n"
+                            "- parte-local pode conter letras, numeros, hifen (-) e ponto (.) \n" \
+                            "- dominio pode conter letras, numeros e hifen (-) separados por ponto (.) \n" \
+                            "- Deve conter no máximo 64 caracteres. ")
+    if not re.match(PADRAO_SENHA, senha):
+        raise ValueError ("Senha Inválida :\n"
+                            "- Deve conter pelo menos 1 letra Maiúscula, 1 letra Minúscula, 1 numérico e 1 caractere especial \n"
+                            "- Deve conter entre 8 à 15 caracteres.")
+    if not re.match(PADRAO_CPF, cpf):
+        raise ValueError ("CPF Inválido : \n"
+                            "- Deve conter apenas números. \n" 
+                            "- Formato desejado : XXX.XXX.XXX-XX \n")
+    
+    # ... (validação de CPF e Senha) ...
+    stmt = insert(usuario).values(cpf=cpf, email=email, nome=nome, senha=senha)
+    
+    with engine.begin() as conn:
+        conn.execute(stmt)
+
+def listar_usuarios():
+    with engine.connect() as conn:
+        result = conn.execute(select(usuario))
+        usuarios = [dict(row) for row in result.mappings()]
+    return usuarios
+
+#read(busca apenas um usuario)
+def buscar_usuario(cpf):
+    with engine.connect() as conn:
+        stmt = select(usuario).where(usuario.c.cpf == cpf)
+        result = conn.execute(stmt).mappings().first()
+    if result:
+        return dict(result)
+    else:
+        print("Nenhum usuário encontrado com esse CPF.")
+        return None    
+
+def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
+    novos_valores = {}
+
+    if novo_email:
+        if not re.match(PADRAO_EMAIL, novo_email):
+            raise ValueError("Email Inválido :\n" \
+                            "- Deve conter padrao email : parte-local@dominio \n"
+                            "- parte-local pode conter letras, numeros, hifen (-) e ponto (.) \n" \
+                            "- dominio pode conter letras, numeros e hifen (-) separados por ponto (.) \n" \
+                            "- Deve conter no máximo 64 caracteres. ")
+        novos_valores["email"] = novo_email
+    if nova_senha:
+        if not re.match(PADRAO_SENHA, nova_senha):
+            raise ValueError ("Senha Inválida :\n"
+                            "- Deve conter pelo menos 1 letra Maiúscula, 1 letra Minúscula, 1 numérico e 1 caractere especial \n"
+                            "- Deve conter entre 8 à 15 caracteres.")
+        novos_valores["senha"] = nova_senha
+
+    if not novos_valores:
+        raise ValueError("Nenhum campo fornecido para atualização.")
+
+    stmt = (
+        update(usuario)
+        .where(usuario.c.cpf == cpf) #usuario.c.cpf é o mesmo que usuario.columns.cpf (serve para pegar a coluna de cpf)
+        .values(**novos_valores)
+    )
+
+    with engine.begin() as conn:
+        result = conn.execute(stmt)
+        if result.rowcount == 0:
+            raise ValueError("Nenhum usuário encontrado com esse CPF.")
+        print(f"Usuário com CPF {cpf} atualizado com sucesso!")
+
+def deletar_usuario(cpf):
+    stmt = delete(usuario).where(usuario.c.cpf == cpf)
+
+    with engine.begin() as conn:
+        result = conn.execute(stmt)
+        if result.rowcount == 0:
+            raise ValueError("Nenhum usuário encontrado com esse CPF.")
+    print(f"Usuário com CPF {cpf} removido com sucesso!")
