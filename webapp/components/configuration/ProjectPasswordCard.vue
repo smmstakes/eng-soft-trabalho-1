@@ -81,7 +81,6 @@ const updatePassword = async () => {
     
     toasts.success('Senha do projeto atualizada com sucesso!');
   } catch (error) {
-    console.error('Falha ao atualizar a senha:', error);
     toasts.error('Não foi possível atualizar a senha.');
   }
 };

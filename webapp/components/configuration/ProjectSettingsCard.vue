@@ -60,7 +60,6 @@ const copyProjectId = async () => {
     await navigator.clipboard.writeText(project.value.projectId);
     toasts.success('ID do projeto copiado!'); 
   } catch (err) {
-    console.error('Falha ao copiar:', err);
     toasts.error('Não foi possível copiar o ID.');
   }
 };
@@ -69,8 +68,6 @@ const copyProjectId = async () => {
 const saveChanges = () => {
   if (!project.value) return;
 
-  console.log('Salvando alterações:', form.value);
-  
   // Exemplo:
   // await $fetch(`/api/projects/${project.value.id}`, {
   //   method: 'PATCH',

@@ -20,7 +20,6 @@ export default defineEventHandler(async (event) => {
 
     // Remove o projeto da base de dados
     projects.splice(projectIndex, 1);
-    console.log(`Projeto com ID ${projectId} foi deletado.`);
 
     return { success: true, message: `Projeto ${projectId} deletado com sucesso.` };
   }

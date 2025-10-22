@@ -59,7 +59,6 @@ const handleDeleteConfirm = async () => {
     // Recarregar a lista de projetos na página para onde for redirecionado.
 
   } catch (error) {
-    console.error("Falha ao deletar o projeto:", error);
     toasts.error("Não foi possível deletar o projeto.");
 
   } finally {

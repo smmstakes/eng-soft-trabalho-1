@@ -21,8 +21,7 @@ export default defineEventHandler(async (event) => {
     }
     
     passwordsByProject[projectId] = body.password;
-    console.log(`Senha do projeto ${projectId} atualizada para: ${body.password}`);
-    
+
     return { success: true, message: 'Senha atualizada com sucesso!' };
   }
   
