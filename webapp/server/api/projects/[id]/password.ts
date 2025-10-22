@@ -9,18 +9,24 @@ export default defineEventHandler(async (event) => {
   const projectId = event.context.params?.id;
 
   if (!projectId) {
-    throw createError({ statusCode: 400, statusMessage: 'Project ID is required' });
+    throw createError({ statusCode: 400, statusMessage: 'Necessário fornecer o ID do projeto' });
   }
 
 
   // Se a requisição for do tipo PATCH (atualização)
   if (event.method === 'PATCH') {
     const body = await readBody(event);
-    if (!body.password || body.password.length < 4) {
-      throw createError({ statusCode: 400, statusMessage: 'Password must be at least 4 characters long' });
+    if (!body.password || body.password.length < 8 || !/[A-Za-z]/.test(body.password) ||
+      !/[0-9]/.test(body.password)) {
+      throw createError({ statusCode: 400, statusMessage: 'A senha deve ter pelo menos 8 caracteres e conter letras e números' });
     }
-    
-    passwordsByProject[projectId] = body.password;
+
+      const projectId = event.context.params?.id;
+      if (!projectId) {
+        throw createError({ statusCode: 400, statusMessage: 'Necessário fornecer o ID do projeto' });
+      }
+
+      passwordsByProject[projectId] = body.password;
 
     return { success: true, message: 'Senha atualizada com sucesso!' };
   }
@@ -31,5 +37,5 @@ export default defineEventHandler(async (event) => {
   }
 
   // Rejeita outros métodos HTTP
-  throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' });
+  throw createError({ statusCode: 405, statusMessage: 'Método não permitido' });
 });
