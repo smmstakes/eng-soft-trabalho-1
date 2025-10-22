@@ -8,14 +8,14 @@ export default defineEventHandler(async (event) => {
   const projectId = parseInt(event.context.params?.id || '0', 10);
 
   if (!projectId) {
-    throw createError({ statusCode: 400, statusMessage: 'Project ID is required' });
+    throw createError({ statusCode: 400, statusMessage: 'Necessário fornecer o ID do projeto' });
   }
 
   if (event.method === 'DELETE') {
     const projectIndex = projects.findIndex(p => p.id === projectId);
 
     if (projectIndex === -1) {
-      throw createError({ statusCode: 404, statusMessage: 'Project not found' });
+      throw createError({ statusCode: 404, statusMessage: 'Projeto não encontrado' });
     }
 
     // Remove o projeto da base de dados
@@ -25,5 +25,5 @@ export default defineEventHandler(async (event) => {
   }
 
   // Adicionar lógicas para GET, PATCH, etc
-  throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' });
+  throw createError({ statusCode: 405, statusMessage: 'Método não permitido' });
 });

@@ -30,7 +30,7 @@ export default defineEventHandler((event) => {
   const projectId = event.context.params?.id;
 
   if (!projectId) {
-    throw createError({ statusCode: 400, statusMessage: 'Project ID is required' });
+    throw createError({ statusCode: 400, statusMessage: 'Necessário fornecer o ID do projeto' });
   }
 
   // Retorna os membros para o projeto específico ou um default
