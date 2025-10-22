@@ -37,12 +37,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ChevronDown, Plus } from 'lucide-vue-next';
+import type { Project } from '../../composables/states';
 
-interface Project {
-	id: number;
-	name: string;
-	sprintStatus: string;
-};
 
 const props = defineProps<{
 	projects: Project[]
