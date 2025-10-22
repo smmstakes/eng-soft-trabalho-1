@@ -159,7 +159,7 @@ input[type="text"], input[type="password"]  {
 
 .alert-icon {
   color: #71717a;
-  flex-shrink: 0; /* Impede que o ícone seja esmagado */
+  flex-shrink: 0;
 }
 
 .form-actions {
