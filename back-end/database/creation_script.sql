@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS "funcao" (
 );
 CREATE TABLE IF NOT EXISTS "usuario" (
         "cpf"   TEXT,
-        "email" TEXT NOT NULL,
+        "email" TEXT NOT NULL UNIQUE,
         "nome"  TEXT NOT NULL,
         "senha" TEXT NOT NULL,
         PRIMARY KEY("cpf")
@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS "task" (
         "nivel_task" TEXT,
         PRIMARY KEY("id_task" AUTOINCREMENT),
         FOREIGN KEY("id_sprint") REFERENCES "sprint"("id_sprint"),
+        FOREIGN KEY("cpf") REFERENCES "usuario"("cpf"),
         FOREIGN KEY("nome_estado") REFERENCES "estado_task"("nome_estado"),
         FOREIGN KEY("nivel_task") REFERENCES "prioridade_task"("nivel_task")
 );
