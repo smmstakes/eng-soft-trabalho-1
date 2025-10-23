@@ -38,22 +38,16 @@ def adicionar_usuario(cpf, email, nome, senha):
     with engine.begin() as conn:
         conn.execute(stmt)
 
-def listar_usuarios():
+def listar_usuarios(cpf=None):
+    stmt = select(usuario)
+    if cpf:
+        stmt = stmt.where(usuario.c.cpf == cpf)
     with engine.connect() as conn:
-        result = conn.execute(select(usuario))
-        usuarios = [dict(row) for row in result.mappings()]
+        result = conn.execute(stmt)
+        usuarios = [dict(row) for row in result.mappings()] 
+    if not usuarios:
+        print("nenhum usuario encontrado")
     return usuarios
-
-#read(busca apenas um usuario)
-def buscar_usuario(cpf):
-    with engine.connect() as conn:
-        stmt = select(usuario).where(usuario.c.cpf == cpf)
-        result = conn.execute(stmt).mappings().first()
-    if result:
-        return dict(result)
-    else:
-        print("Nenhum usuário encontrado com esse CPF.")
-        return None    
 
 def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
     novos_valores = {}
@@ -96,3 +90,6 @@ def deletar_usuario(cpf):
         if result.rowcount == 0:
             raise ValueError("Nenhum usuário encontrado com esse CPF.")
     print(f"Usuário com CPF {cpf} removido com sucesso!")
+
+#adicionar_usuario(cpf="123.456.789-99", email="jose@ex.com", nome="Jose", senha="Jose123@")
+#print(listar_usuarios(cpf="123.456.789-99"))
