@@ -38,6 +38,7 @@ def adicionar_usuario(cpf, email, nome, senha):
     with engine.begin() as conn:
         conn.execute(stmt)
 
+#busca o usuario pelo cpf ou busca todos se não passar parametro
 def listar_usuarios(cpf=None):
     stmt = select(usuario)
     if cpf:
@@ -90,6 +91,3 @@ def deletar_usuario(cpf):
         if result.rowcount == 0:
             raise ValueError("Nenhum usuário encontrado com esse CPF.")
     print(f"Usuário com CPF {cpf} removido com sucesso!")
-
-#adicionar_usuario(cpf="123.456.789-99", email="jose@ex.com", nome="Jose", senha="Jose123@")
-#print(listar_usuarios(cpf="123.456.789-99"))
