@@ -78,7 +78,3 @@ def deletar_task(id_task):
             raise ValueError("Nenhuma task encontrada com esse ID.")
     print(" Task deletada com sucesso!")
 
-#adicionar_task(id_sprint= 1, cpf="123.456.789-00", nome_estado="", descricao_task="", nivel_task="")
-#atualizar_task(id_task=1, cpf="123.456.789-99", nome_estado="Em progresso", nivel_task= "Alta")
-#deletar_task(2)
-#print(listar_task(id_sprint=1))
