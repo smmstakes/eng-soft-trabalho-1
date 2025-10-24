@@ -7,26 +7,47 @@
 			<p>Ainda não tem nada por aqui, você gostaria de:</p>
 
 			<div class="choose-mode-buttons">
-				<Button @click="showModal = true" text="+ Criar um Projeto" mode="black" />
-				<Button text="Ingressar em um Projeto" mode="black" />
+				<Button @click="showCreateModal = true" text="+ Criar um Projeto" mode="black" />
+				<Button @click="showJoinModal= true" text="Ingressar em um Projeto" mode="black" />
 			</div>
 		</div>
 
-		<Modal v-model:show="showModal">
-			<h2>Formulário Genérico</h2>
-
+		<Modal title="Criar Projeto" v-model:show="showCreateModal">
 			<form @submit.prevent="submitForm">
 			<div class="form-group">
-				<label>Nome</label>
+				<label>Título do Projeto *</label>
 				<input type="text" placeholder="Digite seu nome" />
 			</div>
 
 			<div class="form-group">
-				<label>Email</label>
+				<label>Descrição do Projeto *</label>
 				<input type="email" placeholder="Digite seu email" />
 			</div>
 
-			<button type="submit">Enviar</button>
+			<div class="form-group">
+				<label>Senha de ingresso ao projeto *</label>
+				<input type="password" placeholder="Digite a senha de ingresso ao projeto" />
+			</div>
+
+			<Button text="Criar" mode="black" />
+			</form>
+		</Modal>
+
+		<Modal v-model:show="showJoinModal">
+			<h2>Ingressar em um Projeto</h2>
+
+			<form @submit.prevent="submitForm">
+			<div class="form-group">
+				<label>Id do projeto</label>
+				<input type="text" placeholder="Digite o Id do projeto" />
+			</div>
+
+			<div class="form-group">
+				<label>Senha de ingresso ao projeto</label>
+				<input type="senha" placeholder="Digite a senha do projeto" />
+			</div>
+
+			<Button text="Criar" mode="black" />
 			</form>
 		</Modal>
 
@@ -39,7 +60,8 @@ import { ref } from 'vue'
 // TODO: Receber nome vindo da API depois
 const name = "Fulano"
 
-const showModal = ref(false)
+const showCreateModal = ref(false)
+const showJoinModal = ref(false)
 </script>
 
 <style scoped>
