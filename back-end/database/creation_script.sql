@@ -52,7 +52,10 @@ CREATE TABLE IF NOT EXISTS "sprint" (
         "inicio" DATE,
         "termino" DATE,
         "revisao_sprint"        TEXT,
-        PRIMARY KEY("id_sprint" AUTOINCREMENT)
+        "id_projeto" INTEGER,
+        PRIMARY KEY("id_sprint" AUTOINCREMENT),
+        FOREIGN KEY("id_projeto") REFERENCES "projeto"("id_projeto")
+
 );
 CREATE TABLE IF NOT EXISTS "usuario_projeto" (
         "cpf"   TEXT,
