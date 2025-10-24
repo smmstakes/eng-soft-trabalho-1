@@ -1,6 +1,7 @@
 name: esw-trabalho-1-env
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - supabase=2.18.1
   - python=3.13.5
