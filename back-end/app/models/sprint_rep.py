@@ -1,5 +1,5 @@
 import re
-from connection import engine, metadata
+from .connection import engine, metadata
 from datetime import datetime, timedelta
 from sqlalchemy import select, insert, update, delete
 

@@ -1,6 +1,6 @@
-from connection import engine, metadata
-import re
+from .connection import engine, metadata
 from sqlalchemy import select, insert, update, delete
+import re
 
 PADRAO_TITULO = r"^[-,.~'a-zA-Z0-9\s]{2,20}$"
 PADRAO_DESCRICAO = 255
@@ -8,11 +8,11 @@ PADRAO_CPF = r"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$"
 
 projeto = metadata.tables.get("projeto")
 if projeto is None:
-    raise Exception("Tabela 'projeto' não encontrada no banco.")
+    raise ConnectionError("Tabela 'projeto' não encontrada no banco.")
 
 usuario = metadata.tables.get("usuario")
 if usuario is None:
-    raise Exception("Tabela usuario não encontrada no banco")
+    raise ConnectionError("Tabela usuario não encontrada no banco")
 
 
 def adicionar_projeto(titulo: str, descricao: str, cpf_dono: str):
@@ -44,18 +44,18 @@ def listar_todos_projetos():
         result = conn.execute(select(projeto))
         projetos = [dict(row) for row in result.mappings()]
     return projetos
-
+    
 
 def buscar_projeto_por_id(projeto_id: int):
 
     with engine.connect() as conn:
         stmt = select(projeto).where(projeto.c.id_projeto == projeto_id)
         result = conn.execute(stmt).mappings().first()
-    if result:
-        return dict(result)
-    else:
-        print("Nenhum projeto encontrado.")
-        return None   
+
+    if result is None:
+        raise LookupError(f"{projeto_id} não encontrado")
+    
+    return dict(result)
  
 def buscar_projetos_por_cpf_dono(cpf_dono: str):
     
@@ -63,6 +63,10 @@ def buscar_projetos_por_cpf_dono(cpf_dono: str):
         result = conn.execute(select(projeto, usuario).select_from(projeto.join(usuario,
             projeto.c.cpf == usuario.c.cpf)).where(projeto.c.cpf==cpf_dono))
         projetos_do_cpf = [dict(row) for row in result.mappings()]
+
+    if not projetos_do_cpf:
+        raise LookupError("projeto do cpf {cpf_dono} não encontrado")
+    
     return projetos_do_cpf
 
 def atualizar_projeto(projeto_id: int, novo_titulo = None, nova_descricao=None):
@@ -92,8 +96,7 @@ def atualizar_projeto(projeto_id: int, novo_titulo = None, nova_descricao=None):
     with engine.begin() as conn:
         result = conn.execute(stmt)
         if result.rowcount == 0:
-            raise ValueError("Nenhum projeto encontrado com esse id.")
-        print(f"Projeto id: {id} atualizado com sucesso!")
+            raise LookupError("Nenhum projeto encontrado com esse id.")
 
 
 def deletar_usuario(projeto_id: int):
@@ -102,5 +105,4 @@ def deletar_usuario(projeto_id: int):
     with engine.begin() as conn:
         result = conn.execute(stmt)
         if result.rowcount == 0:
-            raise ValueError("Nenhum usuário encontrado com esse CPF.")
-        print(f"Projeto id: {projeto_id} atualizado com sucesso!")
+            raise LookupError("Nenhum usuário encontrado com esse CPF.")

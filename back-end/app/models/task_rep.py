@@ -1,4 +1,4 @@
-from connection import engine, metadata
+from .connection import engine, metadata
 import re
 from sqlalchemy import select, insert, update, delete, text, exists
 

@@ -1,4 +1,4 @@
-from connection import engine, metadata
+from .connection import engine, metadata
 import re
 from sqlalchemy import select, insert, update, delete, text
 
@@ -7,10 +7,9 @@ PADRAO_SENHA = r"^(?=.*[A-Z])(?=.*[!@#$%&*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
 PADRAO_CPF = r"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$"
 PADRAO_EMAIL = r"^[A-Za-z0-9.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{,65}$"
 
-#reflete a tabela do bd
 usuario = metadata.tables.get("usuario")
 if usuario is None:
-    raise Exception("Tabela 'usuario' não encontrada no banco.")
+    raise ConnectionError("Tabela 'usuario' não encontrada no banco.")
 
 def adicionar_usuario(cpf, email, nome, senha):
     if not re.match(PADRAO_NOME, nome):
@@ -34,20 +33,22 @@ def adicionar_usuario(cpf, email, nome, senha):
     
     # ... (validação de CPF e Senha) ...
     stmt = insert(usuario).values(cpf=cpf, email=email, nome=nome, senha=senha)
-    
+        
     with engine.begin() as conn:
         conn.execute(stmt)
 
 #busca o usuario pelo cpf ou busca todos se não passar parametro
 def listar_usuarios(cpf=None):
+
     stmt = select(usuario)
     if cpf:
         stmt = stmt.where(usuario.c.cpf == cpf)
     with engine.connect() as conn:
         result = conn.execute(stmt)
         usuarios = [dict(row) for row in result.mappings()] 
-    if not usuarios:
-        print("nenhum usuario encontrado")
+    
+    if cpf and not usuarios:
+        raise LookupError("Usuario não encontrado") #404
     return usuarios
 
 def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
@@ -61,6 +62,7 @@ def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
                             "- dominio pode conter letras, numeros e hifen (-) separados por ponto (.) \n" \
                             "- Deve conter no máximo 64 caracteres. ")
         novos_valores["email"] = novo_email
+    
     if nova_senha:
         if not re.match(PADRAO_SENHA, nova_senha):
             raise ValueError ("Senha Inválida :\n"
@@ -80,7 +82,7 @@ def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
     with engine.begin() as conn:
         result = conn.execute(stmt)
         if result.rowcount == 0:
-            raise ValueError("Nenhum usuário encontrado com esse CPF.")
+            raise LookupError("Nenhum usuário encontrado com esse CPF.")
         print(f"Usuário com CPF {cpf} atualizado com sucesso!")
 
 def deletar_usuario(cpf):
@@ -89,5 +91,5 @@ def deletar_usuario(cpf):
     with engine.begin() as conn:
         result = conn.execute(stmt)
         if result.rowcount == 0:
-            raise ValueError("Nenhum usuário encontrado com esse CPF.")
+            raise LookupError("Nenhum usuário encontrado com esse CPF.")
     print(f"Usuário com CPF {cpf} removido com sucesso!")
