@@ -1,6 +1,7 @@
-from connection import engine, metadata
-import re
+from .connection import engine, metadata
 from sqlalchemy import select, insert, update, delete, and_
+from sqlalchemy.exc import IntegrityError
+import re 
 
 
 PADRAO_CPF = r"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$"
@@ -21,6 +22,7 @@ if funcao is None:
     raise Exception("Tabela função não foi encontrada no banco")
 
 def adicionar_usuario_projeto(cpf: str, id_projeto: int, nome_funcao: str):
+    
     if not isinstance(id_projeto, int):
         raise ValueError ("ID do Projeto Inválido.")
     
@@ -56,6 +58,7 @@ def listar_projeto_de_usuarios(cpf: str):
 
 # Um projeto pode ter vários usuários. Essa função lista todos os usuarios 
 def listar_usuarios_em_projeto(projeto_id: int):
+    
     if not isinstance(projeto_id, int):
         raise ValueError ("ID do Projeto Inválido.")
  

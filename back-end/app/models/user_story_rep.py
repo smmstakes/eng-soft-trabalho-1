@@ -1,5 +1,5 @@
 import re
-from connection import engine, metadata
+from .connection import engine, metadata
 from sqlalchemy import select, insert, update, delete
 
 PADRAO_NOME = r"^[a-zA-Z\s]{2,20}$"
