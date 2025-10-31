@@ -1,6 +1,5 @@
 from .connection import engine, metadata
 from sqlalchemy import select, insert, update, delete
-from sqlalchemy.exc import IntegrityError, OperationalError
 import re
 
 PADRAO_TITULO = r"^[-,.~'a-zA-Z0-9\s]{2,20}$"
@@ -56,7 +55,7 @@ def buscar_projeto_por_id(projeto_id: int):
     if result is None:
         raise LookupError(f"{projeto_id} não encontrado")
     
-    return result
+    return dict(result)
  
 def buscar_projetos_por_cpf_dono(cpf_dono: str):
     

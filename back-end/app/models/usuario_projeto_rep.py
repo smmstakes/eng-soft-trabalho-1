@@ -1,6 +1,5 @@
 from .connection import engine, metadata
 from sqlalchemy import select, insert, update, delete, and_
-from sqlalchemy.exc import IntegrityError
 import re 
 
 
