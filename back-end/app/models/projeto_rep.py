@@ -35,9 +35,11 @@ def adicionar_projeto(titulo: str, descricao: str, cpf_dono: str):
     stmt = insert(projeto).values(titulo_projeto=titulo, descricao=descricao, cpf=cpf_dono)
 
     with engine.begin() as conn:
-        conn.execute(stmt)
-
-  
+        result = conn.execute(stmt)
+        if result.inserted_primary_key:
+            return result.inserted_primary_key[0]
+        return None
+    
 def listar_todos_projetos():
 
     with engine.connect() as conn:
@@ -99,7 +101,7 @@ def atualizar_projeto(projeto_id: int, novo_titulo = None, nova_descricao=None):
             raise LookupError("Nenhum projeto encontrado com esse id.")
 
 
-def deletar_usuario(projeto_id: int):
+def deletar_projeto(projeto_id: int):
     stmt = delete(projeto).where(projeto.c.id_projeto == projeto_id)
 
     with engine.begin() as conn:
