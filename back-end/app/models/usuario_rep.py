@@ -11,47 +11,49 @@ usuario = metadata.tables.get("usuario")
 if usuario is None:
     raise ConnectionError("Tabela 'usuario' não encontrada no banco.")
 
-def adicionar_usuario(cpf, email, nome, senha):
+def adicionar_usuario(cpf: str, email: str, nome: str, senha: str):
     if not re.match(PADRAO_NOME, nome):
         raise ValueError ("Nome Inválido :\n"
                             "-Deve conter apenas letras e espaço, sem acentuação \n"
                             "-Deve conter entre 2 à 20 caracteres.")
+
     if not re.match(PADRAO_EMAIL, email):
         raise ValueError("Email Inválido :\n" \
                             "- Deve conter padrao email : parte-local@dominio \n"
                             "- parte-local pode conter letras, numeros, hifen (-) e ponto (.) \n" \
                             "- dominio pode conter letras, numeros e hifen (-) separados por ponto (.) \n" \
                             "- Deve conter no máximo 64 caracteres. ")
+
     if not re.match(PADRAO_SENHA, senha):
         raise ValueError ("Senha Inválida :\n"
                             "- Deve conter pelo menos 1 letra Maiúscula, 1 letra Minúscula, 1 numérico e 1 caractere especial \n"
                             "- Deve conter entre 8 à 15 caracteres.")
+
     if not re.match(PADRAO_CPF, cpf):
         raise ValueError ("CPF Inválido : \n"
-                            "- Deve conter apenas números. \n" 
+                            "- Deve conter apenas números. \n"
                             "- Formato desejado : XXX.XXX.XXX-XX \n")
-    
-    # ... (validação de CPF e Senha) ...
+
     stmt = insert(usuario).values(cpf=cpf, email=email, nome=nome, senha=senha)
-        
+
     with engine.begin() as conn:
         conn.execute(stmt)
+        return cpf
 
-#busca o usuario pelo cpf ou busca todos se não passar parametro
-def listar_usuarios(cpf=None):
+def listar_usuarios(cpf = None):
 
     stmt = select(usuario)
     if cpf:
         stmt = stmt.where(usuario.c.cpf == cpf)
     with engine.connect() as conn:
         result = conn.execute(stmt)
-        usuarios = [dict(row) for row in result.mappings()] 
-    
+        usuarios = [dict(row) for row in result.mappings()]
+
     if cpf and not usuarios:
-        raise LookupError("Usuario não encontrado") #404
+        raise LookupError("Usuario não encontrado")
     return usuarios
 
-def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
+def atualizar_usuario(cpf: str, novo_email = None, nova_senha = None):
     novos_valores = {}
 
     if novo_email:
@@ -62,7 +64,7 @@ def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
                             "- dominio pode conter letras, numeros e hifen (-) separados por ponto (.) \n" \
                             "- Deve conter no máximo 64 caracteres. ")
         novos_valores["email"] = novo_email
-    
+
     if nova_senha:
         if not re.match(PADRAO_SENHA, nova_senha):
             raise ValueError ("Senha Inválida :\n"
@@ -75,7 +77,7 @@ def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
 
     stmt = (
         update(usuario)
-        .where(usuario.c.cpf == cpf) #usuario.c.cpf é o mesmo que usuario.columns.cpf (serve para pegar a coluna de cpf)
+        .where(usuario.c.cpf == cpf)
         .values(**novos_valores)
     )
 
@@ -85,7 +87,7 @@ def atualizar_usuario(cpf, novo_email=None, nova_senha=None):
             raise LookupError("Nenhum usuário encontrado com esse CPF.")
         print(f"Usuário com CPF {cpf} atualizado com sucesso!")
 
-def deletar_usuario(cpf):
+def deletar_usuario(cpf: str):
     stmt = delete(usuario).where(usuario.c.cpf == cpf)
 
     with engine.begin() as conn:

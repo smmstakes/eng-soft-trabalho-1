@@ -63,7 +63,10 @@ def adicionar_sprint(meta: str, inicio: str, termino: str, revisao_sprint: str, 
     )
 
     with engine.begin() as conn:
-        conn.execute(stmt)
+        result = conn.execute(stmt)
+        if result.inserted_primary_key:
+            return result.inserted_primary_key[0]
+        return None
 
 def listar_todas_sprints():
 
@@ -81,7 +84,7 @@ def buscar_sprint_por_id(sprint_id: int):
         return dict(result)
     else:
         print("Nenhuma sprint encontrada.")
-        return None
+        return []
 
 def buscar_sprint_por_projeto(id_projeto: int):
 
@@ -93,7 +96,7 @@ def buscar_sprint_por_projeto(id_projeto: int):
             return sprints_do_projeto
         else:
             print("Nenhuma sprint encontrada.")
-            return None
+            return []
 
 def atualizar_sprint(sprint_id: int, nova_meta = None, novo_inicio = None, novo_termino = None, nova_revisao_sprint = None):
 
