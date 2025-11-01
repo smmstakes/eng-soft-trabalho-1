@@ -38,11 +38,6 @@ def adicionar_user_story(id_projeto: int, titulo_user_story: str, objetivo: str,
         raise ValueError ("Prioridade Inválida : \n" \
                             "- Deve ser 'Alta', 'Média' ou 'Baixa'")
 
-    with engine.connect() as conn:
-        projeto_existe = conn.scalar(select(projeto.c.id_projeto).where(projeto.c.id_projeto == id_projeto))
-        if not projeto_existe:
-            raise ValueError(f"Projeto ID {id_projeto} não encontrado.")
-
     stmt = insert(user_story).values(
         id_projeto=id_projeto,
         titulo_user_story=titulo_user_story,
@@ -52,7 +47,10 @@ def adicionar_user_story(id_projeto: int, titulo_user_story: str, objetivo: str,
         )
 
     with engine.begin() as conn:
-        conn.execute(stmt)
+        result = conn.execute(stmt)
+        if result.inserted_primary_key:
+            return result.inserted_primary_key[0]
+        return None
 
 def listar_todas_user_stories():
 
@@ -70,7 +68,7 @@ def buscar_user_story_por_id(user_story_id: int):
             return dict(result)
         else:
             print("Nenhuma user_story encontrada.")
-            return None
+            return []
 
 def buscar_user_stories_por_projeto(id_projeto: int):
 
@@ -125,7 +123,6 @@ def atualizar_user_story(user_story_id: int, novo_titulo_user_story = None, novo
         result = conn.execute(stmt)
         if result.rowcount == 0:
             raise ValueError(f"Nenhuma User Story encontrada com o ID: {user_story_id}.")
-        print(f"User Story ID: {user_story_id} atualizada com sucesso!")
 
 def deletar_user_story(user_story_id: int):
 
@@ -134,4 +131,3 @@ def deletar_user_story(user_story_id: int):
         result = conn.execute(stmt)
         if result.rowcount == 0:
             raise ValueError(f"Nenhuma User Story encontrada com o ID: {user_story_id}.")
-        print(f"User Story ID: {user_story_id} deletada com sucesso!")
