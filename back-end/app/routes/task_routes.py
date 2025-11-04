@@ -52,6 +52,36 @@ def criar_task():
     except ConnectionError as e:
         return jsonify({"erro ": str(e)}), 500
 
+def listar_tasks():
+    cpf = request.args.get("cpf")
+    id_sprint = request.args.get("id_sprint")
+    id_task = request.args.get("id_task")
+
+    try:
+        tasks = task_rep.listar_task(cpf=cpf, id_sprint=id_sprint, id_task=id_task)
+        if not tasks:
+            return jsonify({"mensagem": "Nenhuma task encontrada"}), 404
+        return jsonify(tasks), 200
+
+    except Exception as e:
+        return jsonify({"erro": str(e)}), 500
+
+@task_bp.route('/<int:id_task>', methods=['PUT'])
+def atualizar_task(id_task):
+    dados = request.json
+    if not dados:
+        return jsonify({'erro': 'JSON ausente'}), 400
+
+    try:
+        task_rep.atualizar_task(id_task, **dados)
+        task_atualizada = task_rep.listar_task(id_task=id_task)[0]
+        return jsonify(task_atualizada), 200
+
+    except ValueError as e:
+        return jsonify({'erro': str(e)}), 404
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 @task_bp.route("/<int:id_task>", methods=["DELETE"])
 def deletar_task(id_task):
     try:
