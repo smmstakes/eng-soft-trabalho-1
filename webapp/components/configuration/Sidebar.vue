@@ -24,6 +24,10 @@
 				<li>
 					<NuxtLink to="/configuration"><Settings /> Configurações</NuxtLink>					
 				</li>
+
+				<li>
+					<NuxtLink to="/projects"><ArrowLeft /> Retornar aos Projetos</NuxtLink>					
+				</li>
 			</ul>
 		</nav>
 		
@@ -31,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {List, ListCheck, SquareKanban, Settings} from 'lucide-vue-next';
+import {List, ListCheck, SquareKanban, Settings, ArrowLeft} from 'lucide-vue-next';
 
 const projects = useProjectsList();
 
