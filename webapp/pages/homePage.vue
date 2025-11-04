@@ -36,7 +36,10 @@
 		<Modal title="Ingressar em um Projeto" v-model:show="showJoinModal">
 			<form @submit.prevent="submitJoinForm">
 				<div class="form-group">
-					<label>ID do Projeto *</label>
+					<label>
+						ID do Projeto
+						<Tooltip text="Os membros da sua equipe utilizarão essa senha para ingressar no projeto." />
+					</label>
 					<input type="text" placeholder="Digite o ID do projeto" required />
 				</div>
 
