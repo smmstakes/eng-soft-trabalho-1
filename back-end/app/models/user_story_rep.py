@@ -2,7 +2,7 @@ import re
 from .connection import engine, metadata
 from sqlalchemy import select, insert, update, delete
 
-PADRAO_NOME = r"^[a-zA-Z\s]{2,20}$"
+PADRAO_NOME = r"^[a-zA-Z\s]{2,40}$"
 PADRAO_OBJETIVO = 100
 PADRAO_BENEFICIO = 255
 PADRAO_PRIORIDADE = r"Alta|Media|Baixa"
