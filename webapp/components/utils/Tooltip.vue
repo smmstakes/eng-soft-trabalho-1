@@ -1,11 +1,11 @@
 <template>
 	<div class="tooltip-trigger" @mouseenter="show = true" @mouseleave="show = false">
-		<img src="/assets/info-icon.svg" alt="info" class="trigger-icon" />
+		<img :src="icon" alt="info" class="trigger-icon" />
 
 		<transition name="fade">
 			<div v-if="show" class="tooltip-top">
 				<div class="tooltip-content">
-					<img src="/assets/info-icon.svg" alt="info" class="tooltip-icon" />
+					<img :src="icon" alt="info" class="tooltip-icon" />
 					<p>{{ text }}</p>
 				</div>
 			</div>
@@ -20,6 +20,10 @@ const props = defineProps({
 	text: {
 		type: String,
 		required: true
+	},
+	icon: {
+		type: String,
+		default: '/assets/info-icon.svg' // ícone padrão se não for passado
 	}
 })
 
@@ -53,7 +57,7 @@ const show = ref(false)
 	transform: translateX(-50%);
 	width: 480px;
 	height: 83px;
-	background-color: #E5E5E5;
+	background-color: #FAFAFA;
 	border-radius: 6px;
 	box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 	display: flex;
