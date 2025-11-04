@@ -25,11 +25,13 @@
 </template>
 
 <script setup lang="ts">
+import { useProject } from '@/composables/useProject'
+const project = useProject()
+
 definePageMeta({
   layout: 'config'
 });
 
-const project = useProject();
 </script>
 
 <style scoped>

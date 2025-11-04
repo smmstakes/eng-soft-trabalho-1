@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ChevronDown, Plus } from 'lucide-vue-next';
-import type { Project } from '../../composables/states';
+import type { Project } from '../../composables/useProject';
 
 
 const props = defineProps<{
