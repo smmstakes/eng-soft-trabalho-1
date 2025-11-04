@@ -71,7 +71,7 @@ const showJoinModal = ref(false)
 	display: flex;
 	flex-direction: column;
 
-	height: 100%;
+	height: 100vh;
 	width: 100%;
 }
 
@@ -79,9 +79,12 @@ const showJoinModal = ref(false)
 	display: flex;
 	flex-direction: column;
 	justify-self: center;
+	/* justify-content: center; */
+	padding-top: 10%;
 
-	margin: 120px 0px 0px 20%;
+	padding-left:20%;
 	width: 400px;
+	height: 100%;
 }
 
 .center-text h1 {

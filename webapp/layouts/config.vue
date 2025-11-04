@@ -66,6 +66,5 @@ const handleProjectSelection = (selected: Project) => {
 
 .main-content {
   flex-grow: 1;
-  padding: 20px 32px;
 }
 </style>
