@@ -13,7 +13,6 @@ from app.models import usuario_rep, projeto_rep
 @pytest.fixture
 def client():
     app = create_app()
-    """Cria um cliente de teste para a nossa 'app'."""
     with app.test_client() as client:
         yield client
 
@@ -27,14 +26,11 @@ DADOS_USUARIO_DONO = {
 DADOS_PROJETO_TESTE = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
+    "senha": "!MeuProjeto123",
     "cpf": DADOS_USUARIO_DONO['cpf']
 }
 
 def test_criar_projeto_e_limpar(client):
-    """
-    Testa a rota POST /api/projetos/ no banco de dados real
-    e depois limpa os dados.
-    """
     
     id_projeto_criado = None 
     
@@ -47,6 +43,7 @@ def test_criar_projeto_e_limpar(client):
                 nome=DADOS_USUARIO_DONO["nome"],
                 senha=DADOS_USUARIO_DONO["senha"]
             )
+
         except ValueError as e:
             if "já existem" in str(e):
                 print(f"AVISO SETUP: Usuário {DADOS_USUARIO_DONO['cpf']} já existe.")
@@ -71,10 +68,16 @@ def test_criar_projeto_e_limpar(client):
 
         id_projeto_criado = data.get('id_projeto') or projeto.get('id_projeto')
         assert id_projeto_criado is not None, "Resposta JSON não incluiu 'id_projeto'"
+
+        assert projeto_rep.verificar_credenciais_projeto(
+            titulo=DADOS_PROJETO_TESTE['titulo_projeto'],
+            cpf=DADOS_PROJETO_TESTE['cpf'],
+            senha_enviada=DADOS_PROJETO_TESTE['senha']
+        ), "Falha na verificação das credenciais do projeto criado."
+
         print(f"\nSUCESSO: Projeto {id_projeto_criado} criado.")
 
     finally:
-        print("--- INICIANDO LIMPEZA ---")
         
         if id_projeto_criado:
             try:
