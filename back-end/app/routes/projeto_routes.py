@@ -12,9 +12,10 @@ def criar_projeto():
     
     titulo = dados.get('titulo_projeto')
     descricao = dados.get('descricao')
+    senha = dados.get('senha')
     cpf_dono = dados.get('cpf')
 
-    if not all([titulo,descricao,cpf_dono]):
+    if not all([titulo,descricao,senha,cpf_dono]):
         return jsonify({'erro': 'Dados obrigatórios ausentes'}), 400
     
     try:
@@ -26,16 +27,19 @@ def criar_projeto():
         id_criado = projeto_rep.adicionar_projeto(
             titulo=titulo,
             descricao=descricao,
-            cpf_dono=cpf_dono,
+            senha=senha,
+            cpf_dono=cpf_dono
         )
 
         if not id_criado:
             raise ConnectionError(f"Falha em salvar o projeto do Usuário {cpf_dono}")
         
+        json = {"id_projeto": id_criado,
+                "titulo_projeto": titulo,
+                "descricao": descricao,
+                "cpf": cpf_dono}
 
-        projeto_criado = projeto_rep.buscar_projeto_por_id(id_criado)
-
-        return jsonify(projeto_criado), 201 
+        return jsonify(json), 201 
     
     except LookupError as e:
         return jsonify({"erro ": str(e)}), 404
