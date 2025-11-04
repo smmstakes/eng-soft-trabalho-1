@@ -2,8 +2,13 @@
 	<transition name="fade">
 		<div v-if="show" class="modal-overlay" @click.self="close">
 			<div class="modal-content">
-					<button class="close-btn" @click="close">×</button>
+				<button class="close-btn" @click="close">×</button>
+				<h2>{{ title }}</h2>
+				<hr />
+
+				<div class="modal-body">
 					<slot />
+				</div>
 			</div>
 		</div>
 	</transition>
@@ -11,14 +16,18 @@
 
 <script setup>
 const props = defineProps({
-    show: Boolean
+	show: Boolean,
+	title: {
+		type: String,
+		default: '' // caso não seja passado
+	}
 });
 
 const emit = defineEmits(['update:show']);
 
 function close() {
-    emit('update:show', false)
-};
+	emit('update:show', false);
+}
 </script>
 
 <style scoped>
@@ -37,13 +46,32 @@ function close() {
 	background-color: white;
 	width: 600px;
 	max-width: 90%;
-	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
 	max-height: 80vh;
 	overflow-y: auto;
 }
 
+.modal-content hr {
+	margin: 0;
+	border: none;
+	border-top: 1px solid #D4D4D4;
+}
+
+.modal-body {
+	padding: 30px;
+}
+
+:deep(h2) {
+	font-size: 16pt;
+	padding: 18px 30px;
+	font-weight: 400;
+	margin-bottom: 8px;
+}
+
+:deep(label){
+	color: #404040;
+}
 
 .close-btn {
 	position: absolute;
@@ -59,9 +87,9 @@ function close() {
 
 .close-btn:hover {
 	color: #D4D4D4;
+	transition: 400ms;
 }
 
-/* animação de entrada/saída */
 .fade-enter-active,
 .fade-leave-active {
 	transition: opacity 0.3s;

@@ -6,23 +6,41 @@ task = metadata.tables.get("task")
 
 def adicionar_task(id_sprint, cpf, nome_estado = None, descricao_task = None, nivel_task = None):
     stmt = insert(task).values(
-        id_sprint=id_sprint,
-        cpf=cpf,
-        nome_estado=nome_estado,
-        descricao_task=descricao_task,
-        nivel_task=nivel_task
+        id_sprint = id_sprint,
+        cpf = cpf,
+        nome_estado = nome_estado,
+        descricao_task = descricao_task,
+        nivel_task = nivel_task
     )
-    with engine.begin() as conn:
-        conn.execute(stmt)
 
-#busca task pelo cpf ou id_sprint e default busca todas as tasks 
+    with engine.begin() as conn:
+        result = conn.execute(stmt)
+        if result.inserted_primary_key:
+            return result.inserted_primary_key[0]
+        return None
+
 def listar_task(cpf=None, id_sprint=None):
     stmt = select(task)
     if cpf:
         stmt = stmt.where(task.c.cpf == cpf)
     if id_sprint:
         stmt = stmt.where(task.c.id_sprint == id_sprint)
-    
+
+    with engine.connect() as conn:
+        result = conn.execute(stmt)
+        tasks = [dict(row) for row in result.mappings()]
+    if not tasks:
+        print("nenhuma task encontrada")
+    return tasks
+
+def listar_task(cpf=None, id_sprint=None, id_task=None):
+    stmt = select(task)
+    if cpf:
+        stmt = stmt.where(task.c.cpf == cpf)
+    if id_sprint:
+        stmt = stmt.where(task.c.id_sprint == id_sprint)
+    if id_task:
+        stmt = stmt.where(task.c.id_task == id_task)
     with engine.connect() as conn:
         result = conn.execute(stmt)
         tasks = [dict(row) for row in result.mappings()]

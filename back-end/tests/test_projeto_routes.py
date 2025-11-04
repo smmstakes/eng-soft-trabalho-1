@@ -7,7 +7,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.insert(0, parent_dir)
 
-from run import create_app 
+from run import create_app
 from app.models import usuario_rep, projeto_rep
 
 @pytest.fixture
@@ -18,10 +18,10 @@ def client():
 
 
 DADOS_USUARIO_DONO = {
-    "cpf": "123.456.789-00", 
+    "cpf": "123.456.789-00",
     "email": "joao.silva@teste.com",
     "nome": "Joao Silva",
-    "senha": "$JoaoSilva123" 
+    "senha": "$JoaoSilva123"
 }
 DADOS_PROJETO_TESTE = {
     "titulo_projeto": "PROJETO 1 - Joao",
@@ -35,7 +35,7 @@ def test_criar_projeto_e_limpar(client):
     id_projeto_criado = None 
     
     try:
-        
+
         try:
             usuario_rep.adicionar_usuario(
                 cpf=DADOS_USUARIO_DONO["cpf"],
@@ -85,7 +85,7 @@ def test_criar_projeto_e_limpar(client):
 
             except Exception as e:
                 print(f"AVISO: Falha ao limpar o projeto {id_projeto_criado}: {e}")
-        
+
         try:
             usuario_rep.deletar_usuario(DADOS_USUARIO_DONO['cpf'])
             print(f"Limpeza: Usuário {DADOS_USUARIO_DONO['cpf']} deletado.")
