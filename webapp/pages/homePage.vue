@@ -8,48 +8,47 @@
 
 			<div class="choose-mode-buttons">
 				<Button @click="showCreateModal = true" text="+ Criar um Projeto" mode="black" />
-				<Button @click="showJoinModal= true" text="Ingressar em um Projeto" mode="black" />
+				<Button @click="showJoinModal = true" text="Ingressar em um Projeto" mode="black" />
 			</div>
 		</div>
 
 		<Modal title="Criar Projeto" v-model:show="showCreateModal">
 			<form @submit.prevent="submitForm">
-			<div class="form-group">
-				<label>Título do Projeto *</label>
-				<input type="text" placeholder="Digite seu nome" />
-			</div>
+				<div class="form-group">
+					<label>Título do Projeto *</label>
+					<input type="text" placeholder="Digite seu nome" />
+				</div>
 
-			<div class="form-group">
-				<label>Descrição do Projeto *</label>
-				<input type="email" placeholder="Digite seu email" />
-			</div>
+				<div class="form-group">
+					<label>Descrição do Projeto *</label>
+					<textarea type="email" placeholder="Digite seu email" />
+				</div>
 
-			<div class="form-group">
-				<label>Senha de ingresso ao projeto *</label>
-				<input type="password" placeholder="Digite a senha de ingresso ao projeto" />
-			</div>
+				<div class="form-group">
+					<label>Senha de ingresso ao projeto *</label>
+					<input type="password" placeholder="Digite a senha de ingresso ao projeto" />
+				</div>
 
-			<Button text="Criar" mode="black" />
+				<Button text="Criar" mode="black" />
 			</form>
 		</Modal>
 
-		<Modal v-model:show="showJoinModal">
-			<h2>Ingressar em um Projeto</h2>
+		<Modal title="Ingressar em um Projeto" v-model:show="showJoinModal">
+			<form @submit.prevent="submitJoinForm">
+				<div class="form-group">
+					<label>ID do Projeto *</label>
+					<input type="text" placeholder="Digite o ID do projeto" required />
+				</div>
 
-			<form @submit.prevent="submitForm">
-			<div class="form-group">
-				<label>Id do projeto</label>
-				<input type="text" placeholder="Digite o Id do projeto" />
-			</div>
+				<div class="form-group">
+					<label>Senha de ingresso ao projeto *</label>
+					<input type="password" placeholder="Digite a senha de ingresso ao projeto" required />
+				</div>
 
-			<div class="form-group">
-				<label>Senha de ingresso ao projeto</label>
-				<input type="senha" placeholder="Digite a senha do projeto" />
-			</div>
-
-			<Button text="Criar" mode="black" />
+				<Button text="Ingressar" mode="black" />
 			</form>
 		</Modal>
+
 
 	</div>
 </template>

@@ -4,10 +4,11 @@
 			<div class="modal-content">
 				<button class="close-btn" @click="close">×</button>
 				<h2>{{ title }}</h2>
-
 				<hr />
 
-				<slot />
+				<div class="modal-body">
+					<slot />
+				</div>
 			</div>
 		</div>
 	</transition>
@@ -45,27 +46,31 @@ function close() {
 	background-color: white;
 	width: 600px;
 	max-width: 90%;
-	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.3);
 	max-height: 80vh;
 	overflow-y: auto;
 }
 
-.title {
-	margin-bottom: 16px;
+.modal-content hr {
+	margin: 0;
+	border: none;
+	border-top: 1px solid #D4D4D4;
+}
+
+.modal-body {
+	padding: 30px;
 }
 
 :deep(h2) {
-	font-size: 20pt;
+	font-size: 16pt;
+	padding: 18px 30px;
 	font-weight: 400;
 	margin-bottom: 8px;
 }
 
-.title hr {
-	border: none;
-	border-top: 0.5px solid #ccc;
-	margin: 0;
+:deep(label){
+	color: #404040;
 }
 
 .close-btn {
@@ -82,9 +87,9 @@ function close() {
 
 .close-btn:hover {
 	color: #D4D4D4;
+	transition: 400ms;
 }
 
-/* animação de entrada/saída */
 .fade-enter-active,
 .fade-leave-active {
 	transition: opacity 0.3s;
