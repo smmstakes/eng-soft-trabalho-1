@@ -16,17 +16,17 @@
 			<form @submit.prevent="submitForm">
 				<div class="form-group">
 					<label>Título do Projeto *</label>
-					<input type="text" placeholder="Digite seu nome" />
+					<input type="text" placeholder="Digite seu nome"required />
 				</div>
 
 				<div class="form-group">
 					<label>Descrição do Projeto *</label>
-					<textarea type="email" placeholder="Digite seu email" />
+					<textarea type="email" placeholder="Digite seu email" required />
 				</div>
 
 				<div class="form-group">
 					<label>Senha de ingresso ao projeto *</label>
-					<input type="password" placeholder="Digite a senha de ingresso ao projeto" />
+					<input type="password" placeholder="Digite a senha de ingresso ao projeto" required />
 				</div>
 
 				<Button text="Criar" mode="black" />
