@@ -6,7 +6,33 @@ html, body {
 
     width: 100vw;
     height: 100%;
-    /* height: 100vh; */
+
     margin: 0px;
     padding: 0px;
+}
+
+input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d4d4d8;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+
+    margin: 10px 0px 16px 0px;
+}
+
+textarea {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid #d4d4d8;
+	border-radius: 6px;
+	font-size: 1rem;
+	box-sizing: border-box;
+
+	margin: 10px 0px 16px 0px;
+
+	min-height: 100px; /* altura inicial */
+	resize: vertical;
+	font-family: inherit; 
 }
