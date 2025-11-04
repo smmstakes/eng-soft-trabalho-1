@@ -51,3 +51,23 @@ def criar_task():
 
     except ConnectionError as e:
         return jsonify({"erro ": str(e)}), 500
+
+@task_bp.route("/<int:id_task>", methods=["DELETE"])
+def deletar_task(id_task):
+    try:
+        task_encontrada = task_rep.listar_task(id_task=id_task)
+        if not task_encontrada:
+            return jsonify({"erro": f"Task {id_task} não encontrada"}), 404
+
+        deletado = task_rep.deletar_task(id_task)
+        if not deletado:
+            raise ConnectionError(f"Falha ao deletar task {id_task}")
+
+        return jsonify({"mensagem": f"Task {id_task} deletada com sucesso"}), 200
+
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
+    except ConnectionError as e:
+        return jsonify({"erro": str(e)}), 500
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500

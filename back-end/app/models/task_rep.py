@@ -86,6 +86,7 @@ def atualizar_task(id_task, **novos_valores):
         if result.rowcount == 0:
             raise ValueError("Nenhuma task encontrada com o ID {id_task}")
         print("Task atualizada com sucesso")
+        return True
 
 def deletar_task(id_task):
     stmt = delete(task).where(task.c.id_task == id_task)
@@ -93,6 +94,7 @@ def deletar_task(id_task):
     with engine.begin() as conn:
         result = conn.execute(stmt)
         if result.rowcount == 0:
-            raise ValueError("Nenhuma task encontrada com esse ID.")
+            raise LookupError("Nenhuma task encontrada com esse ID.")
     print(" Task deletada com sucesso!")
+    return True
 

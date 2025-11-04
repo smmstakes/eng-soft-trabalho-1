@@ -129,3 +129,85 @@ def test_criar_task_e_limpar(client):
                 usuario_rep.deletar_usuario(cpf_usuario)
             except Exception as e:
                 print(f"AVISO: Falha ao limpar o usuário {cpf_usuario}: {e}")
+
+def test_deletar_task(client):
+    id_task_criado = None
+    id_sprint_criada = None
+    id_projeto_criado = None
+    cpf_usuario = DADOS_USUARIO_DONO["cpf"]
+
+    try:
+        try:
+            usuario_rep.adicionar_usuario(
+                cpf=DADOS_USUARIO_DONO["cpf"],
+                email=DADOS_USUARIO_DONO["email"],
+                nome=DADOS_USUARIO_DONO["nome"],
+                senha=DADOS_USUARIO_DONO["senha"]
+            )
+        except ValueError as e:
+            if "já existem" in str(e):
+                print(f"AVISO SETUP: Usuário {cpf_usuario} já existe.")
+            else:
+                assert False, f"Falha no SETUP (adicionar_usuario): {e}"
+
+        id_projeto_criado = projeto_rep.adicionar_projeto(
+            titulo=DADOS_PROJETO_TESTE["titulo_projeto"],
+            descricao=DADOS_PROJETO_TESTE["descricao"],
+            cpf_dono=DADOS_PROJETO_TESTE["cpf"]
+        )
+        assert id_projeto_criado is not None, "Falha ao obter id_projeto"
+
+        id_sprint_criada = sprint_rep.adicionar_sprint(
+            meta=DADOS_SPRINT["meta"],
+            inicio=DADOS_SPRINT["inicio"],
+            termino=DADOS_SPRINT["termino"],
+            revisao_sprint=DADOS_SPRINT["revisao_sprint"],
+            id_projeto=id_projeto_criado
+        )
+        assert id_sprint_criada is not None, "Falha ao obter id_sprint"
+
+        tabela_task = DADOS_TASK.copy()
+        tabela_task["id_sprint"] = id_sprint_criada
+        tabela_task["cpf"] = cpf_usuario
+
+        response_criar = client.post("/api/tasks/", json=tabela_task)
+        assert response_criar.status_code == 201, (
+            f"Falha ao criar task (status {response_criar.status_code}): {response_criar.get_data(as_text=True)}"
+        )
+        id_task_criado = response_criar.get_json().get("id_task")
+
+        response_del = client.delete(f"/api/tasks/{id_task_criado}")
+        assert response_del.status_code == 200, (
+            f"Esperado 200 ao deletar, obteve {response_del.status_code}. Body: {response_del.get_data(as_text=True)}"
+        )
+
+        data_del = response_del.get_json()
+        assert "mensagem" in data_del and str(id_task_criado) in data_del["mensagem"], "Mensagem de sucesso ausente"
+
+        tasks_restantes = task_rep.listar_task(id_task=id_task_criado)
+        assert len(tasks_restantes) == 0, "Task ainda existe após deletar"
+
+        response_del_2 = client.delete(f"/api/tasks/{id_task_criado}")
+        assert response_del_2.status_code == 404, (
+            f"Esperado 404 ao deletar novamente, obteve {response_del_2.status_code}"
+        )
+
+    finally:
+        print("\n--- INICIANDO LIMPEZA ---\n")
+        if id_sprint_criada:
+            try:
+                sprint_rep.deletar_sprint(id_sprint_criada)
+            except Exception as e:
+                print(f"AVISO: Falha ao limpar sprint {id_sprint_criada}: {e}")
+
+        if id_projeto_criado:
+            try:
+                projeto_rep.deletar_projeto(id_projeto_criado)
+            except Exception as e:
+                print(f"AVISO: Falha ao limpar projeto {id_projeto_criado}: {e}")
+
+        if cpf_usuario:
+            try:
+                usuario_rep.deletar_usuario(cpf_usuario)
+            except Exception as e:
+                print(f"AVISO: Falha ao limpar usuário {cpf_usuario}: {e}")
