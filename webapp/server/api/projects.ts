@@ -21,5 +21,12 @@ export default defineEventHandler((event) => {
       description: 'Aplicativo mobile para monitoramento de hábitos diários.',
       sprintStatus: 'Backlog - Não iniciada'
     },
+    {
+      id: 4,
+      projectId: 'ck@#51fgnp242349ndfCuv',
+      name: 'Teste',
+      description: 'Aplicativo mobile para monitoramento de hábitos diários.',
+      sprintStatus: 'Backlog - Não iniciada'
+    }
   ];
 });

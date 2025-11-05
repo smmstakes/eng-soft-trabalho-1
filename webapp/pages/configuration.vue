@@ -1,56 +1,46 @@
 <template>
   <div class="main-wrapper">
-		
-    <div class="page-content" v-if="project">
-      <h1 class="config-title">Configurações do Projeto - {{ project.name }}</h1>
-      <h3 class="config-description">Gerencie configurações essenciais e membros do projeto</h3>
-    </div>
 
-    <div class="mt-8">
-      <ProjectSettingsCard />
-    </div>
+    <Header title="Configurações do Projeto" description="Gerencie configurações essenciais e membros do projeto">
+    </Header>
 
-    <div class="mt-8">
-      <ProjectMembersCard />
-    </div>
+    <div class="main-content">
+      <div class="mt-8">
+        <ProjectSettingsCard />
+      </div>
 
-    <div class="mt-8">
-      <ProjectPasswordCard />
-    </div>
+      <div class="mt-8">
+        <ProjectMembersCard />
+      </div>
 
-    <div class="mt-8">
-      <DangerZoneCard />
-    </div>
+      <div class="mt-8">
+        <ProjectPasswordCard />
+      </div>
 
+      <div class="mt-8">
+        <DangerZoneCard />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { useProject } from '@/composables/useProject'
+const project = useProject()
+
 definePageMeta({
   layout: 'config'
 });
 
-const project = useProject();
 </script>
 
 <style scoped>
-.config-title {
-	color: #171717;
-  font-size: x-large;
-	font-weight: 500;
-  margin: 4px;
-  padding-bottom: 4px;
-}
-
-.config-description {
-  color: #171717;
-  font-size: medium;
-  font-weight: 400;
-	margin: 4px;
-  padding-top: 4px;
-}
-
 .mt-8 {
- margin-top: 24px;
+  margin-top: 24px;
 }
+
+.main-content {
+  padding: 20px 32px;
+}
+
 </style>

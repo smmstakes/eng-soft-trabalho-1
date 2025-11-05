@@ -42,10 +42,10 @@ def criar_projeto():
         return jsonify(json), 201 
     
     except LookupError as e:
-        return jsonify({"erro ": str(e)}), 404
+        return jsonify({"erro": str(e)}), 404
     
     except ValueError as e:
-        return jsonify({"erro ": str(e)}), 400
+        return jsonify({"erro": str(e)}), 400
         
     except ConnectionError as e:
-        return jsonify({"erro ": str(e)}), 500
+        return jsonify({"erro": str(e)}), 500
