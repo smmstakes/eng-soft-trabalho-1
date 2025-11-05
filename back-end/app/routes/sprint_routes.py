@@ -35,7 +35,7 @@ def criar_sprint():
         )
 
         if not id_sprint_criada:
-            raise ConnectionError("Falha em salvar a Sprint do projeto {id_projeto}")
+            raise ConnectionError("Falha em salvar a Sprint do projeto {id_projeto}.")
 
         sprint_criada = sprint_rep.buscar_sprint_por_id(id_sprint_criada)
 
@@ -54,3 +54,18 @@ def criar_sprint():
 
     except ConnectionError as e:
         return jsonify({"erro": str(e)}), 500
+
+@sprint_bp.route('/<int:id_sprint>', methods=['DELETE'])
+def deletar_sprint(id_sprint):
+    try:
+        sprint_rep.deletar_sprint(id_sprint)
+        return jsonify({"mensagem": f"Sprint {id_sprint} deletada com sucesso."}), 200
+
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
+
+    except ConnectionError as e:
+        return jsonify({"erro": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500

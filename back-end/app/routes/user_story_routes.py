@@ -48,3 +48,18 @@ def criar_user_story():
 
     except ConnectionError as e:
         return jsonify({"erro": str(e)}), 500
+
+@user_story_bp.route('/<int:user_story_id>', methods=['DELETE'])
+def deletar_user_story(user_story_id):
+    try:
+        user_story_rep.deletar_user_story(user_story_id)
+        return jsonify({"mensagem": f"User Story {user_story_id} deletada com sucesso."}), 200
+
+    except ValueError as e:
+        return jsonify({"erro": str(e)}), 404
+
+    except ConnectionError as e:
+        return jsonify({"erro": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500

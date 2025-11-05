@@ -13,3 +13,4 @@ dependencies:
   - sqlalchemy=2.0.43
   - sqlite=3.50.4
   - flask-cors=4.0.1
+  - bcrypt
