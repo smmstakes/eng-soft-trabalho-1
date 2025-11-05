@@ -27,7 +27,8 @@ DADOS_USUARIO = {
 DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
-    "cpf": DADOS_USUARIO['cpf']
+    "cpf": DADOS_USUARIO['cpf'],
+    "senha": "$JoaoSilva123"
 }
 
 DADOS_USER_STORY = {
@@ -54,6 +55,7 @@ def setup_para_user_story():
         id_projeto_criado = projeto_rep.adicionar_projeto(
             titulo = DADOS_PROJETO["titulo_projeto"],
             descricao = DADOS_PROJETO["descricao"],
+            senha = DADOS_PROJETO["senha"],
             cpf_dono = DADOS_PROJETO["cpf"]
         )
         assert id_projeto_criado is not None, "Setup falhou ao criar projeto"
@@ -89,6 +91,7 @@ def test_criar_user_story(client, setup_para_user_story):
         assert response.status_code == 201, (
             f"Esperado status 201, obteve {response.status_code}. Body: {response.get_data(as_text = True)}")
         data = response.get_json()
+        id_user_story_criada = data.get('id_user_story')
         assert data.get('id_projeto') == id_projeto_criado
         assert data.get('titulo_user_story') == DADOS_USER_STORY['titulo_user_story']
         assert data.get('objetivo') == DADOS_USER_STORY['objetivo']

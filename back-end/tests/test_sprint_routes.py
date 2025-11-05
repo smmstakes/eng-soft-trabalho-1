@@ -27,7 +27,8 @@ DADOS_USUARIO = {
 DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
-    "cpf": DADOS_USUARIO['cpf']
+    "cpf": DADOS_USUARIO['cpf'],
+    "senha": "$JoaoSilva123"
 }
 DADOS_SPRINT: dict[str, Any] = {
     "meta": "Entregar o MVP",
@@ -53,6 +54,7 @@ def setup_para_sprint():
         id_projeto_criado = projeto_rep.adicionar_projeto(
             titulo = DADOS_PROJETO["titulo_projeto"],
             descricao = DADOS_PROJETO["descricao"],
+            senha = DADOS_PROJETO["senha"],
             cpf_dono = DADOS_PROJETO["cpf"]
         )
         assert id_projeto_criado is not None, "Setup falhou ao criar projeto"
@@ -89,7 +91,7 @@ def test_criar_sprint(client, setup_para_sprint):
             f"Esperado status 201, obteve {response.status_code}. Body: {response.get_data(as_text = True)}"
         )
         data = response.get_json()
-
+        id_sprint_criada = data.get('id_sprint')
         assert data.get('id_projeto') == id_projeto_criado
         assert data.get('meta') == DADOS_SPRINT['meta']
         assert data.get('inicio') == DADOS_SPRINT['inicio']
