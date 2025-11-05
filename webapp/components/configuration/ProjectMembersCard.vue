@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Member, Role } from '../../composables/states';
+import type { Member, Role } from '../../composables/useProject';
 
 const members = useProjectMembers();
 const toasts = useToasts();

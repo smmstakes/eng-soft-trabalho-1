@@ -13,7 +13,7 @@
 
 <script>
 import { ref } from 'vue'
-const profileImage = ref('') // TODO: Receber foto vinda da API depois
+const profileImage = ref('/logo.svg') // TODO: Receber foto vinda da API depois
 
 </script>
 

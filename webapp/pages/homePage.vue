@@ -7,28 +7,51 @@
 			<p>Ainda não tem nada por aqui, você gostaria de:</p>
 
 			<div class="choose-mode-buttons">
-				<Button @click="showModal = true" text="+ Criar um Projeto" mode="black" />
-				<Button text="Ingressar em um Projeto" mode="black" />
+				<Button @click="showCreateModal = true" text="+ Criar um Projeto" mode="black" />
+				<Button @click="showJoinModal = true" text="Ingressar em um Projeto" mode="black" />
 			</div>
 		</div>
 
-		<Modal v-model:show="showModal">
-			<h2>Formulário Genérico</h2>
-
+		<Modal title="Criar Projeto" v-model:show="showCreateModal">
 			<form @submit.prevent="submitForm">
-			<div class="form-group">
-				<label>Nome</label>
-				<input type="text" placeholder="Digite seu nome" />
-			</div>
+				<div class="form-group">
+					<label>Título do Projeto *</label>
+					<input type="text" placeholder="Digite seu nome"required />
+				</div>
 
-			<div class="form-group">
-				<label>Email</label>
-				<input type="email" placeholder="Digite seu email" />
-			</div>
+				<div class="form-group">
+					<label>Descrição do Projeto *</label>
+					<textarea type="email" placeholder="Digite seu email" required />
+				</div>
 
-			<button type="submit">Enviar</button>
+				<div class="form-group">
+					<label>Senha de ingresso ao projeto *</label>
+					<input type="password" placeholder="Digite a senha de ingresso ao projeto" required />
+				</div>
+
+				<Button text="Criar" mode="black" />
 			</form>
 		</Modal>
+
+		<Modal title="Ingressar em um Projeto" v-model:show="showJoinModal">
+			<form @submit.prevent="submitJoinForm">
+				<div class="form-group">
+					<label>
+						ID do Projeto
+						<Tooltip text="Os membros da sua equipe utilizarão essa senha para ingressar no projeto." />
+					</label>
+					<input type="text" placeholder="Digite o ID do projeto" required />
+				</div>
+
+				<div class="form-group">
+					<label>Senha de ingresso ao projeto *</label>
+					<input type="password" placeholder="Digite a senha de ingresso ao projeto" required />
+				</div>
+
+				<Button text="Ingressar" mode="black" />
+			</form>
+		</Modal>
+
 
 	</div>
 </template>
@@ -39,7 +62,8 @@ import { ref } from 'vue'
 // TODO: Receber nome vindo da API depois
 const name = "Fulano"
 
-const showModal = ref(false)
+const showCreateModal = ref(false)
+const showJoinModal = ref(false)
 </script>
 
 <style scoped>
@@ -47,7 +71,7 @@ const showModal = ref(false)
 	display: flex;
 	flex-direction: column;
 
-	height: 100%;
+	height: 100vh;
 	width: 100%;
 }
 
@@ -55,9 +79,12 @@ const showModal = ref(false)
 	display: flex;
 	flex-direction: column;
 	justify-self: center;
+	/* justify-content: center; */
+	padding-top: 10%;
 
-	margin: 120px 0px 0px 20%;
+	padding-left:20%;
 	width: 400px;
+	height: 100%;
 }
 
 .center-text h1 {

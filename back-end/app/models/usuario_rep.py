@@ -1,6 +1,7 @@
 from .connection import engine, metadata
-import re
 from sqlalchemy import select, insert, update, delete, text
+import re
+import bcrypt
 
 PADRAO_NOME = r"^[a-zA-Z\s]{2,20}$"
 PADRAO_SENHA = r"^(?=.*[A-Z])(?=.*[!@#$%&*])(?=.*[0-9])(?=.*[a-z]).{8,16}$"
@@ -34,7 +35,9 @@ def adicionar_usuario(cpf: str, email: str, nome: str, senha: str):
                             "- Deve conter apenas números. \n"
                             "- Formato desejado : XXX.XXX.XXX-XX \n")
 
-    stmt = insert(usuario).values(cpf=cpf, email=email, nome=nome, senha=senha)
+    senha_hash = bcrypt.hashpw(senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+    stmt = insert(usuario).values(cpf=cpf, email=email, nome=nome, senha=senha_hash)
 
     with engine.begin() as conn:
         conn.execute(stmt)
@@ -42,9 +45,11 @@ def adicionar_usuario(cpf: str, email: str, nome: str, senha: str):
 
 def listar_usuarios(cpf = None):
 
-    stmt = select(usuario)
+    stmt = select(usuario.c.cpf, usuario.c.email, usuario.c.nome)
+
     if cpf:
         stmt = stmt.where(usuario.c.cpf == cpf)
+        
     with engine.connect() as conn:
         result = conn.execute(stmt)
         usuarios = [dict(row) for row in result.mappings()]
@@ -52,6 +57,29 @@ def listar_usuarios(cpf = None):
     if cpf and not usuarios:
         raise LookupError("Usuario não encontrado")
     return usuarios
+
+def verificar_credenciais(cpf: str, senha_enviada: str):
+
+    stmt = select(usuario).where(usuario.c.cpf == cpf)
+    
+    with engine.connect() as conn:
+        resultado = conn.execute(stmt).mappings().first()
+        if resultado:
+            usuario_encontrado = dict(resultado)
+            senha_banco = usuario_encontrado['senha']
+
+    if not usuario_encontrado:
+        raise LookupError("Credenciais inválidas")
+    
+    senha_enviada_bytes = senha_enviada.encode('utf-8')
+    senha_hasheada_bytes = senha_banco.encode('utf-8')
+    
+    senha_bate = bcrypt.checkpw(senha_enviada_bytes, senha_hasheada_bytes)
+
+    if not senha_bate:
+        raise LookupError("Credenciais inválidas")
+    
+    return usuario_encontrado 
 
 def atualizar_usuario(cpf: str, novo_email = None, nova_senha = None):
     novos_valores = {}
@@ -70,7 +98,8 @@ def atualizar_usuario(cpf: str, novo_email = None, nova_senha = None):
             raise ValueError ("Senha Inválida :\n"
                             "- Deve conter pelo menos 1 letra Maiúscula, 1 letra Minúscula, 1 numérico e 1 caractere especial \n"
                             "- Deve conter entre 8 à 15 caracteres.")
-        novos_valores["senha"] = nova_senha
+        senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        novos_valores["senha"] = senha_hash
 
     if not novos_valores:
         raise ValueError("Nenhum campo fornecido para atualização.")
