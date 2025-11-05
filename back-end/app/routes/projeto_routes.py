@@ -1,9 +1,11 @@
 from ..models import projeto_rep, usuario_rep
 from flask import Blueprint,request, jsonify
+from flask_jwt_extended import jwt_required, current_user
 
 projeto_bp = Blueprint('projeto_bp', __name__, url_prefix= '/api/projetos')
 
 @projeto_bp.route('/', methods = ['POST'])
+@jwt_required()
 def criar_projeto():
     dados = request.json
     
@@ -13,9 +15,9 @@ def criar_projeto():
     titulo = dados.get('titulo_projeto')
     descricao = dados.get('descricao')
     senha = dados.get('senha')
-    cpf_dono = dados.get('cpf')
+    cpf_dono = current_user['cpf']
 
-    if not all([titulo,descricao,senha,cpf_dono]):
+    if not all([titulo,descricao,senha]):
         return jsonify({'erro': 'Dados obrigatórios ausentes'}), 400
     
     try:
@@ -49,3 +51,19 @@ def criar_projeto():
         
     except ConnectionError as e:
         return jsonify({"erro": str(e)}), 500
+
+@projeto_bp.route('/', methods = ['GET'])
+@jwt_required()
+def listar_projetos_usuario():
+
+    try:
+        cpf_dono = current_user['cpf']
+        projetos = projeto_rep.buscar_projetos_por_cpf_dono(cpf_dono)
+
+        return jsonify(projetos), 200
+    except ConnectionError as e:
+        return jsonify({"erro": str(e)}), 500
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
+    except ValueError as e:
+        return jsonify({"erro": str(e)}), 400

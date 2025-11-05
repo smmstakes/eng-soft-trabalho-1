@@ -6,7 +6,7 @@ db_path = os.path.abspath(os.path.join(BASE_DIR, "../../database/projetoScrum.db
 
 DATABASE_FILE = "../../database/projetoScrum.db"
 
-engine = create_engine(f"sqlite:///{db_path}", echo=False)
+engine = create_engine(f"sqlite:///{db_path}",pool_pre_ping = True, echo=False)
 
 # Cria metadados(estrutura para refletir as tabelas)
 metadata = MetaData()
