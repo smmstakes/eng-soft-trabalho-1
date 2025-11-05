@@ -67,7 +67,7 @@ def verificar_credenciais(cpf: str, senha_enviada: str):
         if resultado:
             usuario_encontrado = dict(resultado)
             senha_banco = usuario_encontrado['senha']
-
+            
     if not usuario_encontrado:
         raise LookupError("Credenciais inválidas")
     
@@ -75,8 +75,10 @@ def verificar_credenciais(cpf: str, senha_enviada: str):
     senha_hasheada_bytes = senha_banco.encode('utf-8')
     
     senha_bate = bcrypt.checkpw(senha_enviada_bytes, senha_hasheada_bytes)
+    
 
     if not senha_bate:
+        print("aa")
         raise LookupError("Credenciais inválidas")
     
     return usuario_encontrado 
