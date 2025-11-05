@@ -18,16 +18,16 @@ def client():
     with app.test_client() as client:
         yield client
 
-DADOS_USUARIO_DONO = {
+DADOS_USUARIO = {
     "cpf": "123.456.789-00",
     "email": "joao.silva@teste.com",
     "nome": "Joao Silva",
     "senha": "$JoaoSilva123"
 }
-DADOS_PROJETO_TESTE = {
+DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
-    "cpf": DADOS_USUARIO_DONO['cpf']
+    "cpf": DADOS_USUARIO['cpf']
 }
 DADOS_SPRINT: dict[str, Any] = {
     "meta": "Entregar o MVP",
@@ -36,69 +36,102 @@ DADOS_SPRINT: dict[str, Any] = {
     "revisao_sprint": "Revisao ao final do periodo.",
 }
 
-def test_criar_sprint_e_limpar(client):
-    id_sprint_criada = None
+@pytest.fixture
+def setup_para_sprint():
     id_projeto_criado = None
-    cpf_usuario = DADOS_USUARIO_DONO["cpf"]
+    cpf_usuario = DADOS_USUARIO["cpf"]
 
     try:
         try:
-            usuario_rep.adicionar_usuario(
-                cpf = DADOS_USUARIO_DONO["cpf"],
-                email = DADOS_USUARIO_DONO["email"],
-                nome = DADOS_USUARIO_DONO["nome"],
-                senha = DADOS_USUARIO_DONO["senha"]
-            )
+            usuario_rep.adicionar_usuario(**DADOS_USUARIO)
+            print(f"\nAVISO SETUP: Usuário {cpf_usuario} criado.")
         except ValueError as e:
-            if "já existem" in str(e):
-                print(f"AVISO SETUP: Usuário {cpf_usuario} já existe.")
-            else:
-                assert False, f"Falha no SETUP (adicionar_usuario): {e}"
+            if "já existem" not in str(e):
+                raise e
+            print(f"\nAVISO SETUP: Usuário {cpf_usuario} já existe.")
 
+        id_projeto_criado = projeto_rep.adicionar_projeto(
+            titulo = DADOS_PROJETO["titulo_projeto"],
+            descricao = DADOS_PROJETO["descricao"],
+            cpf_dono = DADOS_PROJETO["cpf"]
+        )
+        assert id_projeto_criado is not None, "Setup falhou ao criar projeto"
+        print(f"AVISO SETUP: Projeto {id_projeto_criado} criado.")
+
+        yield {
+            "cpf": cpf_usuario,
+            "id_projeto": id_projeto_criado,
+        }
+
+    finally:
+        print("\n--- INICIANDO LIMPEZA ---\n")
         try:
-            id_projeto_criado = projeto_rep.adicionar_projeto(
-                titulo = DADOS_PROJETO_TESTE["titulo_projeto"],
-                descricao = DADOS_PROJETO_TESTE["descricao"],
-                cpf_dono = DADOS_PROJETO_TESTE["cpf"]
-            )
-            assert id_projeto_criado is not None, "Falha ao obter id_projeto do setup"
-            print(f"AVISO SETUP: Projeto {id_projeto_criado} criado.")
-
+            if id_projeto_criado:
+                projeto_rep.deletar_projeto(id_projeto_criado)
+                print(f"Limpeza: Projeto {id_projeto_criado} deletado.")
+            if cpf_usuario:
+                usuario_rep.deletar_usuario(cpf_usuario)
+                print(f"Limpeza: Usuário {cpf_usuario} deletado.")
         except Exception as e:
-            assert False, f"Falha no SETUP (adicionar_projeto): {e}"
+            print(f"AVISO [LIMPEZA]: Falha ao limpar fixture: {e}")
 
+
+def test_criar_sprint(client, setup_para_sprint):
+    id_sprint_criada = None
+    id_projeto_criado = setup_para_sprint["id_projeto"]
+
+    try:
         tabela_sprint = DADOS_SPRINT.copy()
         tabela_sprint['id_projeto'] = id_projeto_criado
-
         response = client.post('/api/sprints/', json = tabela_sprint)
 
         assert response.status_code == 201, (
-            f"Esperado status 201, obteve {response.status_code}. "f"Body: {response.get_data(as_text=True)}")
+            f"Esperado status 201, obteve {response.status_code}. Body: {response.get_data(as_text = True)}"
+        )
         data = response.get_json()
 
-        id_sprint_criada = data.get('id_sprint')
         assert data.get('id_projeto') == id_projeto_criado
         assert data.get('meta') == DADOS_SPRINT['meta']
         assert data.get('inicio') == DADOS_SPRINT['inicio']
         assert data.get('termino') == DADOS_SPRINT['termino']
 
     finally:
-        print("\n--- INICIANDO LIMPEZA ---\n")
-
         if id_sprint_criada:
             try:
                 sprint_rep.deletar_sprint(id_sprint_criada)
             except Exception as e:
                 print(f"AVISO: Falha ao limpar a sprint {id_sprint_criada}: {e}")
 
-        if id_projeto_criado:
-            try:
-                projeto_rep.deletar_projeto(id_projeto_criado)
-            except Exception as e:
-                print(f"AVISO: Falha ao limpar o projeto {id_projeto_criado}: {e}")
+def deletar_sprint(client, setup_para_sprint):
+    id_sprint_criada = None
 
-        if cpf_usuario:
+    try:
+        id_sprint_criada = sprint_rep.adicionar_sprint(
+            id_projeto = setup_para_sprint["id_projeto"],
+            **DADOS_SPRINT
+        )
+        assert id_sprint_criada is not None, "Falha ao criar sprint para o teste de deleção"
+        response_del = client.delete(f"/api/sprints/{id_sprint_criada}")
+        assert response_del.status_code == 200, (
+            f"Esperado 200 ao deletar sprint, obteve {response_del.status_code}. Body: {response_del.get_data(as_text = True)}"
+        )
+        data_del = response_del.get_json()
+        assert "mensagem" in data_del and str(id_sprint_criada) in data_del["mensagem"], "Mensagem de sucesso ausente ou incorreta"
+        sprint_obj = sprint_rep.buscar_sprint_por_id(id_sprint_criada)
+        if sprint_obj is not None:
+            assert False, f"Sprint {id_sprint_criada} ainda existe no repositório ({sprint_obj}) após deleção via API"
+        response_del_2 = client.delete(f"/api/sprints/{id_sprint_criada}")
+        assert response_del_2.status_code == 404, (
+            f"Esperado 404 ao deletar sprint já removida, obteve {response_del_2.status_code}"
+        )
+        print(f"\nSUCESSO: Sprint {id_sprint_criada} deletada e 404 confirmado.")
+        id_sprint_criada = None
+
+    finally:
+        if id_sprint_criada:
             try:
-                usuario_rep.deletar_usuario(cpf_usuario)
+                sprint_rep.deletar_sprint(id_sprint_criada)
+                print(f"AVISO (Safety Net): Sprint {id_sprint_criada} deletada.")
             except Exception as e:
-                print(f"AVISO: Falha ao limpar o usuário {cpf_usuario}: {e}")
+                print(f"AVISO: Falha ao limpar a sprint {id_sprint_criada}: {e}")
+
