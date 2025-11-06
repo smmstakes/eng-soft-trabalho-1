@@ -87,18 +87,23 @@ def test_criar_task_e_limpar(client):
         except Exception as e:
             assert False, f"Falha no SETUP (adicionar_sprint): {e}"
 
-        tabela_task = DADOS_TASK.copy()
-        tabela_task['id_sprint'] = id_sprint_criada
-        tabela_task['cpf'] = cpf_usuario
+        id_task_criado = task_rep.adicionar_task(
+            id_sprint= id_sprint_criada,
+            cpf= DADOS_USUARIO_DONO["cpf"],
+            nome_estado= DADOS_TASK["nome_estado"],
+            descricao_task= DADOS_TASK["descricao_task"],
+            nivel_task= DADOS_TASK["nivel_task"]
+        )
 
-        response = client.post('/api/tasks/', json = tabela_task)
+        tabela = task_rep.listar_task(id_projeto_criado)
+
+        response = client.post('/api/tasks/', json = DADOS_TASK)
 
         assert response.status_code == 201, (
             f"Esperado status 201, obteve {response.status_code}. "f"Body: {response.get_data(as_text=True)}")
         data = response.get_json()
 
-        id_task_criado = data.get('id_task')
-        assert data.get('id_sprint') == id_sprint_criada
+        assert data.get('id_sprint') == tabela
         assert data.get('cpf') == cpf_usuario
         assert data.get('descricao_task') == DADOS_TASK['descricao_task']
 
