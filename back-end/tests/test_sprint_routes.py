@@ -3,6 +3,7 @@ import os
 import pytest
 import json
 from typing import Any
+from flask_jwt_extended import create_access_token
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -19,10 +20,10 @@ def client():
         yield client
 
 DADOS_USUARIO = {
-    "cpf": "123.456.789-00",
-    "email": "joao.silva@teste.com",
-    "nome": "Joao Silva",
-    "senha": "$JoaoSilva123"
+    "cpf": "133.446.789-00",
+    "email": "felipeduarte@gmail.com",
+    "nome": "Felipe Duarte",
+    "senha": "$FelipeDuarte123"
 }
 DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
@@ -91,7 +92,12 @@ def test_criar_sprint(client, setup_para_sprint):
     try:
         tabela_sprint = DADOS_SPRINT.copy()
         tabela_sprint['id_projeto'] = id_projeto_criado
-        response = client.post('/api/sprints/', json = tabela_sprint)
+
+        cpf_usuario = setup_para_sprint["cpf"]
+        with client.application.app_context():
+            token_de_acesso = create_access_token(identity = cpf_usuario)
+        headers = {'Authorization': f'Bearer {token_de_acesso}'}
+        response = client.post('/api/sprints/', json = tabela_sprint, headers = headers)
 
         assert response.status_code == 201, (
             f"Esperado status 201, obteve {response.status_code}. Body: {response.get_data(as_text = True)}"
@@ -158,7 +164,12 @@ def test_listar_sprints_do_projeto(client, setup_para_sprint):
             **DADOS_SPRINT_2
         )
         assert id_sprint_criada_1 and id_sprint_criada_2, "Falha ao criar sprints para o teste de listagem"
-        response = client.get(f"/api/sprints/por-projeto/{id_projeto_criado}")
+
+        cpf_usuario = setup_para_sprint["cpf"]
+        with client.application.app_context():
+            token_de_acesso = create_access_token(identity = cpf_usuario)
+        headers = {'Authorization': f'Bearer {token_de_acesso}'}
+        response = client.get(f"/api/sprints/por-projeto/{id_projeto_criado}", headers = headers)
 
         assert response.status_code == 200, (
              f"Esperado 200, obteve {response.status_code}. Body: {response.get_data(as_text = True)}"

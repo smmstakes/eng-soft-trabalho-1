@@ -1,10 +1,12 @@
 from ..models import projeto_rep, sprint_rep
 from flask import Blueprint,request, jsonify
+from flask_jwt_extended import jwt_required
 from datetime import date
 
 sprint_bp = Blueprint('sprint_bp', __name__, url_prefix='/api/sprints')
 
 @sprint_bp.route('/', methods=['POST'])
+@jwt_required()
 def criar_sprint():
     dados = request.json
 
@@ -56,6 +58,7 @@ def criar_sprint():
         return jsonify({"erro": str(e)}), 500
 
 @sprint_bp.route('/<int:id_sprint>', methods=['DELETE'])
+@jwt_required()
 def deletar_sprint(id_sprint):
     try:
         sprint_rep.deletar_sprint(id_sprint)
@@ -71,6 +74,7 @@ def deletar_sprint(id_sprint):
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
 
 @sprint_bp.route('/por-projeto/<int:id_projeto>', methods=['GET'])
+@jwt_required()
 def listar_sprint_do_projeto(id_projeto):
     try:
         projeto_rep.buscar_projeto_por_id(id_projeto)

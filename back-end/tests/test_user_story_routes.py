@@ -3,7 +3,7 @@ import os
 import pytest
 import json
 from typing import Any
-
+from flask_jwt_extended import create_access_token
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -19,10 +19,10 @@ def client():
         yield client
 
 DADOS_USUARIO = {
-    "cpf": "123.456.789-00",
-    "email": "joao.silva@teste.com",
-    "nome": "Joao Silva",
-    "senha": "$JoaoSilva123"
+    "cpf": "133.446.789-00",
+    "email": "felipeduarte@gmail.com",
+    "nome": "Felipe Duarte",
+    "senha": "$FelipeDuarte123"
 }
 DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
@@ -32,8 +32,8 @@ DADOS_PROJETO = {
 }
 
 DADOS_USER_STORY = {
-    "titulo_user_story": "Criar relatorio de desempenho",
-    "objetivo": "Avaliar o desempenho dos colaboradores",
+    "titulo_user_story": "Criar relatorio",
+    "objetivo": "Avaliar o desempenho dos participantes",
     "beneficio": "Permitir uma avaliação justa.",
     "prioridade": "Alta"
 }
@@ -92,7 +92,11 @@ def test_criar_user_story(client, setup_para_user_story):
         tabela_user_story = DADOS_USER_STORY.copy()
         tabela_user_story['id_projeto'] = id_projeto_criado
 
-        response = client.post('/api/users-stories/', json = tabela_user_story)
+        cpf_usuario = setup_para_user_story["cpf"]
+        with client.application.app_context():
+            token_de_acesso = create_access_token(identity = cpf_usuario)
+        headers = {'Authorization': f'Bearer {token_de_acesso}'}
+        response = client.post('/api/users-stories/', json = tabela_user_story, headers = headers)
 
         assert response.status_code == 201, (
             f"Esperado status 201, obteve {response.status_code}. Body: {response.get_data(as_text = True)}")
@@ -162,7 +166,12 @@ def test_listar_users_stories_do_projeto(client, setup_para_user_story):
             **DADOS_USER_STORY_2
         )
         assert id_user_story_criada_1 and id_user_story_criada_2, "Falha ao criar User Stories para o teste de listagem"
-        response = client.get(f'/api/users-stories/por-projeto/{id_projeto_criado}')
+
+        cpf_usuario = setup_para_user_story["cpf"]
+        with client.application.app_context():
+            token_de_acesso = create_access_token(identity = cpf_usuario)
+        headers = {'Authorization': f'Bearer {token_de_acesso}'}
+        response = client.get(f'/api/users-stories/por-projeto/{id_projeto_criado}', headers = headers)
 
         assert response.status_code == 200, (
              f"Esperado 200, obteve {response.status_code}. Body: {response.get_data(as_text = True)}"
