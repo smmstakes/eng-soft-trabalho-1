@@ -30,11 +30,17 @@ DADOS_PROJETO = {
     "cpf": DADOS_USUARIO['cpf'],
     "senha": "$JoaoSilva123"
 }
-DADOS_SPRINT: dict[str, Any] = {
+DADOS_SPRINT = {
     "meta": "Entregar o MVP",
     "inicio": "2025-11-10",
     "termino": "2025-11-20",
     "revisao_sprint": "Revisao ao final do periodo.",
+}
+DADOS_SPRINT_2 = {
+    "meta": "Terminar o trabalho de ES",
+    "inicio": "2025-11-15",
+    "termino": "2025-11-25",
+    "revisao_sprint": "Revisar o código e docs",
 }
 
 @pytest.fixture
@@ -104,36 +110,71 @@ def test_criar_sprint(client, setup_para_sprint):
             except Exception as e:
                 print(f"AVISO: Falha ao limpar a sprint {id_sprint_criada}: {e}")
 
-def deletar_sprint(client, setup_para_sprint):
-    id_sprint_criada = None
+#def test_deletar_sprint(client, setup_para_sprint):
+#    id_sprint_criada = None
+#
+#    try:
+#        id_sprint_criada = sprint_rep.adicionar_sprint(
+#            id_projeto = setup_para_sprint["id_projeto"],
+#            **DADOS_SPRINT
+#        )
+#        assert id_sprint_criada is not None, "Falha ao criar sprint para o teste de deleção"
+#        response_del = client.delete(f"/api/sprints/{id_sprint_criada}")
+#        assert response_del.status_code == 200, (
+#            f"Esperado 200 ao deletar sprint, obteve {response_del.status_code}. Body: {response_del.get_data(as_text = True)}"
+#        )
+#        data_del = response_del.get_json()
+#        assert "mensagem" in data_del and str(id_sprint_criada) in data_del["mensagem"], "Mensagem de sucesso ausente ou incorreta"
+#        sprint_obj = sprint_rep.buscar_sprint_por_id(id_sprint_criada)
+#        if sprint_obj is not None:
+#            assert False, f"Sprint {id_sprint_criada} ainda existe no repositório ({sprint_obj}) após deleção via API"
+#        response_del_2 = client.delete(f"/api/sprints/{id_sprint_criada}")
+#        assert response_del_2.status_code == 404, (
+#            f"Esperado 404 ao deletar sprint já removida, obteve {response_del_2.status_code}"
+#        )
+#        print(f"\nSUCESSO: Sprint {id_sprint_criada} deletada e 404 confirmado.")
+#        id_sprint_criada = None
+#
+#    finally:
+#        if id_sprint_criada:
+#            try:
+#                sprint_rep.deletar_sprint(id_sprint_criada)
+#                print(f"AVISO (Safety Net): Sprint {id_sprint_criada} deletada.")
+#            except Exception as e:
+#                print(f"AVISO: Falha ao limpar a sprint {id_sprint_criada}: {e}")
+
+def test_listar_sprints_do_projeto(client, setup_para_sprint):
+    id_sprint_criada_1 = None
+    id_sprint_criada_2 = None
+    id_projeto_criado = setup_para_sprint["id_projeto"]
 
     try:
-        id_sprint_criada = sprint_rep.adicionar_sprint(
-            id_projeto = setup_para_sprint["id_projeto"],
+        id_sprint_criada_1 = sprint_rep.adicionar_sprint(
+            id_projeto = id_projeto_criado,
             **DADOS_SPRINT
         )
-        assert id_sprint_criada is not None, "Falha ao criar sprint para o teste de deleção"
-        response_del = client.delete(f"/api/sprints/{id_sprint_criada}")
-        assert response_del.status_code == 200, (
-            f"Esperado 200 ao deletar sprint, obteve {response_del.status_code}. Body: {response_del.get_data(as_text = True)}"
+        id_sprint_criada_2 = sprint_rep.adicionar_sprint(
+            id_projeto = id_projeto_criado,
+            **DADOS_SPRINT_2
         )
-        data_del = response_del.get_json()
-        assert "mensagem" in data_del and str(id_sprint_criada) in data_del["mensagem"], "Mensagem de sucesso ausente ou incorreta"
-        sprint_obj = sprint_rep.buscar_sprint_por_id(id_sprint_criada)
-        if sprint_obj is not None:
-            assert False, f"Sprint {id_sprint_criada} ainda existe no repositório ({sprint_obj}) após deleção via API"
-        response_del_2 = client.delete(f"/api/sprints/{id_sprint_criada}")
-        assert response_del_2.status_code == 404, (
-            f"Esperado 404 ao deletar sprint já removida, obteve {response_del_2.status_code}"
+        assert id_sprint_criada_1 and id_sprint_criada_2, "Falha ao criar sprints para o teste de listagem"
+        response = client.get(f"/api/sprints/por-projeto/{id_projeto_criado}")
+
+        assert response.status_code == 200, (
+             f"Esperado 200, obteve {response.status_code}. Body: {response.get_data(as_text = True)}"
         )
-        print(f"\nSUCESSO: Sprint {id_sprint_criada} deletada e 404 confirmado.")
-        id_sprint_criada = None
+        data = response.get_json()
+        assert isinstance(data, list), "API não retornou uma lista (array)"
+        assert len(data) == 2, f"Esperado 2 sprints, mas a API retornou {len(data)}"
+
+        assert isinstance(data[0]['inicio'], str), "As datas não foram convertida para string corretamente"
+        print(f"\nSUCESSO: API listou 2 sprints para o projeto {id_projeto_criado}.")
 
     finally:
-        if id_sprint_criada:
-            try:
-                sprint_rep.deletar_sprint(id_sprint_criada)
-                print(f"AVISO (Safety Net): Sprint {id_sprint_criada} deletada.")
-            except Exception as e:
-                print(f"AVISO: Falha ao limpar a sprint {id_sprint_criada}: {e}")
-
+        try:
+            if id_sprint_criada_1:
+                sprint_rep.deletar_sprint(id_sprint_criada_1)
+            if id_sprint_criada_2:
+                sprint_rep.deletar_sprint(id_sprint_criada_2)
+        except Exception as e:
+            print(f"AVISO: Falha ao limpar sprints de listagem: {e}")

@@ -69,3 +69,25 @@ def deletar_sprint(id_sprint):
 
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+
+@sprint_bp.route('/por-projeto/<int:id_projeto>', methods=['GET'])
+def listar_sprint_do_projeto(id_projeto):
+    try:
+        projeto_rep.buscar_projeto_por_id(id_projeto)
+        sprints = sprint_rep.buscar_sprint_por_projeto(id_projeto)
+
+        sprint_com_datas_corrigidas = []
+        for sprint in sprints:
+            if isinstance(sprint.get('inicio'), date):
+                sprint['inicio'] = sprint['inicio'].isoformat()
+            if isinstance(sprint.get('termino'), date):
+                sprint['termino'] = sprint['termino'].isoformat()
+            sprint_com_datas_corrigidas.append(sprint)
+
+        return jsonify(sprint_com_datas_corrigidas), 200
+
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500

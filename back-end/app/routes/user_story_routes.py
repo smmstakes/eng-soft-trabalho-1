@@ -63,3 +63,15 @@ def deletar_user_story(user_story_id):
 
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+
+@user_story_bp.route('/por-projeto/<int:id_projeto>', methods=['GET'])
+def listar_users_stories_por_projeto(id_projeto):
+    try:
+        projeto_rep.buscar_projeto_por_id(id_projeto)
+        users_stories = user_story_rep.buscar_user_stories_por_projeto(id_projeto)
+        return jsonify(users_stories), 200
+
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
