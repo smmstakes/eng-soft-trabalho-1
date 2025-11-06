@@ -96,7 +96,7 @@ def buscar_sprint_por_projeto(id_projeto: int):
             return sprints_do_projeto
         else:
             print("Nenhuma sprint encontrada.")
-            return None
+            return []
 
 def atualizar_sprint(sprint_id: int, nova_meta = None, novo_inicio = None, novo_termino = None, nova_revisao_sprint = None):
 

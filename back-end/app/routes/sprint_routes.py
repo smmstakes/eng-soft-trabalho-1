@@ -1,10 +1,12 @@
 from ..models import projeto_rep, sprint_rep
 from flask import Blueprint,request, jsonify
+from flask_jwt_extended import jwt_required
 from datetime import date
 
 sprint_bp = Blueprint('sprint_bp', __name__, url_prefix='/api/sprints')
 
 @sprint_bp.route('/', methods=['POST'])
+@jwt_required()
 def criar_sprint():
     dados = request.json
 
@@ -56,6 +58,7 @@ def criar_sprint():
         return jsonify({"erro": str(e)}), 500
 
 @sprint_bp.route('/<int:id_sprint>', methods=['DELETE'])
+@jwt_required()
 def deletar_sprint(id_sprint):
     try:
         sprint_rep.deletar_sprint(id_sprint)
@@ -66,6 +69,29 @@ def deletar_sprint(id_sprint):
 
     except ConnectionError as e:
         return jsonify({"erro": str(e)}), 500
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+
+@sprint_bp.route('/por-projeto/<int:id_projeto>', methods=['GET'])
+@jwt_required()
+def listar_sprint_do_projeto(id_projeto):
+    try:
+        projeto_rep.buscar_projeto_por_id(id_projeto)
+        sprints = sprint_rep.buscar_sprint_por_projeto(id_projeto)
+
+        sprint_com_datas_corrigidas = []
+        for sprint in sprints:
+            if isinstance(sprint.get('inicio'), date):
+                sprint['inicio'] = sprint['inicio'].isoformat()
+            if isinstance(sprint.get('termino'), date):
+                sprint['termino'] = sprint['termino'].isoformat()
+            sprint_com_datas_corrigidas.append(sprint)
+
+        return jsonify(sprint_com_datas_corrigidas), 200
+
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
 
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500

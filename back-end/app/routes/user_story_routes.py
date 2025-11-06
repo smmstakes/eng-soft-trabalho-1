@@ -1,9 +1,11 @@
 from ..models import projeto_rep, user_story_rep
 from flask import Blueprint,request, jsonify
+from flask_jwt_extended import jwt_required
 
 user_story_bp = Blueprint('user_story_bp', __name__, url_prefix='/api/users-stories')
 
 @user_story_bp.route('/', methods=['POST'])
+@jwt_required()
 def criar_user_story():
     dados = request.json
 
@@ -50,6 +52,7 @@ def criar_user_story():
         return jsonify({"erro": str(e)}), 500
 
 @user_story_bp.route('/<int:user_story_id>', methods=['DELETE'])
+@jwt_required()
 def deletar_user_story(user_story_id):
     try:
         user_story_rep.deletar_user_story(user_story_id)
@@ -61,5 +64,18 @@ def deletar_user_story(user_story_id):
     except ConnectionError as e:
         return jsonify({"erro": str(e)}), 500
 
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+
+@user_story_bp.route('/por-projeto/<int:id_projeto>', methods=['GET'])
+@jwt_required()
+def listar_users_stories_por_projeto(id_projeto):
+    try:
+        projeto_rep.buscar_projeto_por_id(id_projeto)
+        users_stories = user_story_rep.buscar_user_stories_por_projeto(id_projeto)
+        return jsonify(users_stories), 200
+
+    except LookupError as e:
+        return jsonify({"erro": str(e)}), 404
     except Exception as e:
         return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
