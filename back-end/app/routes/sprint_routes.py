@@ -94,4 +94,4 @@ def listar_sprint_do_projeto(id_projeto):
         return jsonify({"erro": str(e)}), 404
 
     except Exception as e:
-        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500
+        return jsonify({"erro": str(e)}), 500
