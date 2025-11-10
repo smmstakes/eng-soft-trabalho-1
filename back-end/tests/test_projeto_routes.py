@@ -23,6 +23,14 @@ DADOS_USUARIO_DONO = {
     "nome": "Joao Silva",
     "senha": "$JoaoSilva123"
 }
+DADOS_USUARIO_ENTRAR = {
+    "cpf": "987.654.321-00",
+    "email": "felipe.duarte@hotmail.com",
+    "nome": "Felipe Duarte",
+    "senha": "F3lipeDuarte!",
+    "senha_projeto": "!MeuProjeto123",
+    "cargo": "Desenvolvedor"
+}
 DADOS_PROJETO_TESTE1 = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
@@ -160,5 +168,60 @@ def test_listar_projetos_usuario(client):
             projeto_rep.deletar_projeto(id_projeto_1)
             projeto_rep.deletar_projeto(id_projeto_2)
             usuario_rep.deletar_usuario(DADOS_USUARIO_DONO['cpf'])
+        except Exception as e:
+            print(f"AVISO: Falha ao limpar dados de teste: {e}")
+
+def test_entrar_projeto(client):
+
+    try:
+        usuario_rep.adicionar_usuario(
+            cpf=DADOS_USUARIO_DONO["cpf"],
+            email=DADOS_USUARIO_DONO["email"],
+            nome=DADOS_USUARIO_DONO["nome"],
+            senha=DADOS_USUARIO_DONO["senha"]
+        )
+        usuario_rep.adicionar_usuario(
+            cpf=DADOS_USUARIO_ENTRAR["cpf"],
+            email=DADOS_USUARIO_ENTRAR["email"],
+            nome=DADOS_USUARIO_ENTRAR["nome"],
+            senha=DADOS_USUARIO_ENTRAR["senha"]
+        )
+
+        id_projeto_criado = projeto_rep.adicionar_projeto(
+            titulo=DADOS_PROJETO_TESTE1['titulo_projeto'],
+            descricao=DADOS_PROJETO_TESTE1['descricao'],
+            senha=DADOS_PROJETO_TESTE1['senha'],
+            cpf_dono=DADOS_PROJETO_TESTE1['cpf']
+        )
+
+        login_response = client.post('/api/usuarios/login', json={
+            "cpf": DADOS_USUARIO_ENTRAR["cpf"],
+            "senha": DADOS_USUARIO_ENTRAR["senha"]
+        })
+
+        assert login_response.status_code == 200
+        access_token = login_response.get_json()['access_token']
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+
+        response = client.post('/api/projetos/entrar', json={
+            "id_projeto": id_projeto_criado,
+            "senha": DADOS_USUARIO_ENTRAR['senha_projeto'],
+            "cargo": DADOS_USUARIO_ENTRAR['cargo']
+        }, headers=headers)
+
+        assert response.status_code == 201
+
+        data = response.get_json()
+        assert id_projeto_criado == data.get('id_projeto')
+        assert DADOS_PROJETO_TESTE1['titulo_projeto'] == data.get('titulo_projeto')
+        assert DADOS_USUARIO_ENTRAR['cpf'] == data.get('cpf')
+        assert DADOS_USUARIO_ENTRAR['cargo'] == data.get('nome_funcao')
+
+    finally:
+        try:
+            projeto_rep.deletar_projeto(id_projeto_criado)
+            usuario_rep.deletar_usuario(DADOS_USUARIO_DONO['cpf'])
+            usuario_rep.deletar_usuario(DADOS_USUARIO_ENTRAR['cpf'])
         except Exception as e:
             print(f"AVISO: Falha ao limpar dados de teste: {e}")

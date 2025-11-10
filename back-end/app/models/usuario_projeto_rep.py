@@ -20,7 +20,7 @@ if projeto is None:
 if funcao is None:
     raise Exception("Tabela função não foi encontrada no banco")
 
-def adicionar_usuario_projeto(cpf: str, id_projeto: int, nome_funcao: str):
+def adicionar_usuario_projeto(cpf: str, id_projeto: int, nome_funcao = None):
     
     if not isinstance(id_projeto, int):
         raise ValueError ("ID do Projeto Inválido.")
@@ -29,10 +29,10 @@ def adicionar_usuario_projeto(cpf: str, id_projeto: int, nome_funcao: str):
         raise ValueError ("CPF Inválido : \n"
                             "- Deve conter apenas números. \n" 
                             "- Formato desejado : XXX.XXX.XXX-XX \n")
-    
-    if nome_funcao not in PADRAO_FUNCAO:
-        raise ValueError ("Função Inexistente \n" \
-                          "- Dono do Produto, Scrum Master ou Desenvolvedor \n")
+    if nome_funcao:
+        if nome_funcao not in PADRAO_FUNCAO:
+            raise ValueError ("Função Inexistente \n" \
+                            "- Dono do Produto, Scrum Master ou Desenvolvedor \n")
 
     stmt = insert(usuario_projeto).values(cpf = cpf, id_projeto = id_projeto, nome_funcao = nome_funcao)
     

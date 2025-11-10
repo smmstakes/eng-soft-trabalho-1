@@ -68,7 +68,7 @@ def verificar_credenciais(cpf: str, senha_enviada: str):
             usuario_encontrado = dict(resultado)
             senha_banco = usuario_encontrado['senha']
 
-    if not usuario_encontrado:
+    if usuario_encontrado is None:
         raise LookupError("Credenciais inválidas")
     
     senha_enviada_bytes = senha_enviada.encode('utf-8')
