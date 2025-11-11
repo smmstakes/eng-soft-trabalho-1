@@ -72,16 +72,17 @@ def test_login_usuario(client):
         dados= response.get_json()
         assert dados is not None
 
-        cpf_login = dados.get('cpf')
+        cpf = dados.get('cpf')
         token = dados.get('access_token')
+        assert cpf == DADOS_USUARIO_DONO['cpf']
+        assert token is not None
 
         assert usuario_rep.verificar_credenciais(
-            cpf=cpf_login, 
+            cpf=cpf, 
             senha_enviada=DADOS_USUARIO_DONO['senha']
         )
 
-        assert cpf_login == DADOS_USUARIO_DONO['cpf']
-        assert token is not None
+        assert cpf == DADOS_USUARIO_DONO['cpf']
 
     finally:
         try:
