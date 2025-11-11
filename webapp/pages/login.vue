@@ -91,7 +91,6 @@ const submitLogin = async () => {
   }
 
   try {
-    console.log('Tentando login com:', credentials.value)
     const res = await loginUser(credentials.value)
 
     setAuth(res.access_token, {

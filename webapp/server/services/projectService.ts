@@ -9,8 +9,6 @@ export interface ProjetoData {
 }
 
 export const listarProjetos = async (token: string) => {
-  console.log(auth.value.token);
-  
   const res = await api.get('/projetos/', {
     headers: { Authorization: `Bearer ${token}` },
   })

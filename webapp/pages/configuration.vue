@@ -3,10 +3,21 @@
     <Header title="Configurações do Projeto" description="Gerencie o projeto" />
 
     <div class="main-content">
-      <ProjectSettingsCard />
-      <ProjectMembersCard />
-      <ProjectPasswordCard />
-      <DangerZoneCard />
+      <div class="mt-8">
+        <ProjectSettingsCard />
+      </div>
+
+      <div class="mt-8">
+        <ProjectMembersCard />
+      </div>
+
+      <div class="mt-8">
+        <ProjectPasswordCard />
+      </div>
+
+      <div class="mt-8">
+        <DangerZoneCard />
+      </div>
     </div>
   </div>
 </template>
@@ -18,3 +29,12 @@ const project = useProject()
 definePageMeta({ layout: 'config' })
 </script>
 
+<style scoped>
+.mt-8 {
+  margin-top: 24px;
+}
+
+.main-content {
+  padding: 20px 32px;
+}
+</style>
