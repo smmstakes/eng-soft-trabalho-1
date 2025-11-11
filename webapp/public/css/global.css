@@ -36,3 +36,30 @@ textarea {
 	resize: vertical;
 	font-family: inherit; 
 }
+
+
+.auth-container {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.auth-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 500;
+}
+
+.auth-container .auth-join-button {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.auth-container .auth-instruction-text {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
