@@ -66,24 +66,19 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-// import Header from '@/components/Header.vue';
-// import Button from '@/components/Button.vue';
-// import Modal from '@/components/Modal.vue';
-// import SprintCard from '@/components/SprintCard.vue';
-
 import { useProject, useProjectSprints } from '@/composables/useProject';
 import { useAuth } from '@/composables/useAuth';
 import { criarSprint, listarSprintsDoProjeto } from '@/server/services/projectService';
+import { useToast } from 'vue-toastification';
 
 definePageMeta({ layout: 'config' });
 
 const project = useProject();
 const sprints = useProjectSprints();
-
-// Garante que sprints.value seja sempre um array
 if (!sprints.value) sprints.value = [];
 
 const auth = useAuth();
+const toast = useToast();
 const showCreateModal = ref(false);
 
 const form = ref({
@@ -95,35 +90,38 @@ const form = ref({
 });
 
 const submitCreateSprint = async () => {
-  if (!project.value) return;
-  if (!auth.value.token) return alert('Usuário não autenticado');
+  if (!project.value) return toast.error("Projeto não definido");
+  if (!auth.value.token) return toast.error("Usuário não autenticado");
 
   try {
-    const novaSprint = await criarSprint(project.value.id, form.value, auth.value.token);
+    const novaSprint = await criarSprint(project.value.id_projeto, form.value, auth.value.token);
     sprints.value.push(novaSprint);
 
-    // Resetar formulário e fechar modal
     form.value = { meta: '', meta_sprint: '', inicio: '', termino: '', revisao_sprint: '' };
     showCreateModal.value = false;
+    toast.success("Sprint criada com sucesso!");
   } catch (err: any) {
     console.error(err);
-    alert(err.message || 'Erro ao criar sprint');
+    toast.error(err.message || 'Erro ao criar sprint');
   }
 };
 
 // Carregar sprints ao montar o componente
 onMounted(async () => {
+  console.log(sprints.value[0])
   if (project.value && auth.value.token) {
     try {
-      const data = await listarSprintsDoProjeto(project.value.id, auth.value.token);
+      const data = await listarSprintsDoProjeto(project.value.id_projeto, auth.value.token);
       sprints.value = data || [];
     } catch (err: any) {
       console.error('Erro ao carregar sprints:', err);
       sprints.value = [];
+      toast.error('Erro ao carregar sprints');
     }
   }
 });
 </script>
+
 
 <style scoped>
 .mt-8 {

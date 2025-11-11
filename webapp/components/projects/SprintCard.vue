@@ -26,10 +26,8 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue';
-
 interface Goal {
-  id: number | string;
+  id?: number | string;
   titulo: string;
 }
 
@@ -46,7 +44,6 @@ const props = defineProps<{
   sprint: Sprint;
 }>();
 
-// Converte status para classes CSS
 const statusClass = (status?: string) => {
   switch (status?.toLowerCase()) {
     case 'em andamento':
@@ -60,7 +57,6 @@ const statusClass = (status?: string) => {
   }
 };
 
-// Formata datas
 const formatDate = (date?: string) => {
   if (!date) return '-';
   return new Date(date).toLocaleDateString('pt-BR');
@@ -73,7 +69,6 @@ const formatDate = (date?: string) => {
   border: 1px solid #E5E5E5;
   border-radius: 8px;
   padding: 24px;
-  max-width: 964px;
   margin-bottom: 16px;
 }
 
@@ -99,18 +94,9 @@ const formatDate = (date?: string) => {
   color: #fff;
 }
 
-.status-running {
-  background-color: #facc15; /* amarelo */
-  color: #171717;
-}
-
-.status-completed {
-  background-color: #10b981; /* verde */
-}
-
-.status-finished {
-  background-color: #6b7280; /* cinza */
-}
+.status-running { background-color: #facc15; color: #171717; }
+.status-completed { background-color: #10b981; }
+.status-finished { background-color: #6b7280; }
 
 .sprint-dates {
   font-size: 0.875rem;

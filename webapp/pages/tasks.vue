@@ -50,6 +50,7 @@ if (!sprints.value) sprints.value = [];
 
 // Computed: retorna a sprint ativa, se houver
 const activeSprint = computed(() => {
+    console.log(sprints.value)
   return sprints.value.find(sprint => sprint.status === 'em andamento');
 });
 
@@ -68,7 +69,7 @@ const showCreateTaskModal = ref(false);
 onMounted(async () => {
   if (project.value && auth.value.token) {
     try {
-      const data = await listarSprintsDoProjeto(project.value.id, auth.value.token);
+      const data = await listarSprintsDoProjeto(project.value.id_projeto, auth.value.token);
       sprints.value = data || [];
     } catch (err: any) {
       console.error('Erro ao carregar sprints:', err);
