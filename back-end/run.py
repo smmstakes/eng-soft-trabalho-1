@@ -1,4 +1,5 @@
 from flask import Flask
+from datetime import timedelta
 from flask_jwt_extended import JWTManager
 from app.routes.projeto_routes import projeto_bp
 from app.routes.user_story_routes import user_story_bp
@@ -19,6 +20,7 @@ def create_app():
     cors = os.environ.get('CORS_ORIGIN')
     CORS(app, origins=cors)
     app.config["JWT_SECRET_KEY"] = os.environ.get('JWT_KEY')
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=3)
     
     jwt = JWTManager(app)
 
