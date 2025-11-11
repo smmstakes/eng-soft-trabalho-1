@@ -35,12 +35,30 @@
 </template>
 
 <script setup lang="ts">
-import {List, ListCheck, SquareKanban, Settings, ArrowLeft} from 'lucide-vue-next';
+import { ref, onMounted } from 'vue'
+import { List, ListCheck, SquareKanban, Settings, ArrowLeft } from 'lucide-vue-next'
+import { useProjectsList } from '@/composables/useProject'
+import { listarProjetos } from '@/server/services/projectService'
+import { useAuth } from '@/composables/useAuth'
+import { useToasts } from '@/composables/useToast'
 
-const projects = useProjectsList();
+const projects = useProjectsList()
+const auth = useAuth()
+const toast = useToasts()
 
-defineEmits(['projectSelected']);
+defineEmits(['projectSelected'])
+
+onMounted(async () => {
+  try {
+    if (!auth.value.token) return
+    const data = await listarProjetos(auth.value.token)
+    projects.value = Array.isArray(data) ? data : []
+  } catch (e: any) {
+    toast.error(e.message)
+  }
+})
 </script>
+
 
 <style scoped>
 .sidebar {

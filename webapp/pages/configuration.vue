@@ -1,8 +1,6 @@
 <template>
   <div class="main-wrapper">
-
-    <Header title="Configurações do Projeto" description="Gerencie configurações essenciais e membros do projeto">
-    </Header>
+    <Header title="Configurações do Projeto" description="Gerencie o projeto" />
 
     <div class="main-content">
       <div class="mt-8">
@@ -28,10 +26,7 @@
 import { useProject } from '@/composables/useProject'
 const project = useProject()
 
-definePageMeta({
-  layout: 'config'
-});
-
+definePageMeta({ layout: 'config' })
 </script>
 
 <style scoped>
@@ -42,5 +37,4 @@ definePageMeta({
 .main-content {
   padding: 20px 32px;
 }
-
 </style>

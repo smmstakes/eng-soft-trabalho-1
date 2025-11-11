@@ -2,55 +2,97 @@
   <div class="container">
     <TopBar />
 
-    <Header title="Meus Projetos" description="Gerencie e acompanhe seus projetos de eventos">
-      <Button @click="showJoinModal = true" text="➜ Ingressar em um Projeto" mode="black" />
-      <Button @click="showCreateModal = true" text="+ Novo Projeto" mode="black" />
+    <Header
+      title="Meus Projetos"
+      description="Gerencie e acompanhe seus projetos de eventos"
+    >
+      <Button
+        @click="showJoinModal = true"
+        text="➜ Ingressar em um Projeto"
+        mode="black"
+      />
+      <Button
+        @click="showCreateModal = true"
+        text="+ Novo Projeto"
+        mode="black"
+      />
     </Header>
 
+    <div v-if="projects.length === 0" class="empty-state">
+      <p>Ainda não há nada por aqui...</p>
+      <p>Comece criando um novo projeto ou ingressando em um.</p>
+    </div>
+
     <!-- Grid de Projetos -->
-    <div class="projects-grid">
-      <ProjectCard v-for="project in projects" :key="project.projectId" :id="project.id" :icon="getIcon(project.name)"
-        :title="project.name" :description="project.description" :project-id="project.projectId"
-        @click="selectProject(project)" />
+    <div v-else class="projects-grid">
+      <ProjectCard
+        v-for="project in projects"
+        :key="project.id"
+        :id="project.id"
+        :icon="getIcon(project.titulo_projeto)"
+        :title="project.titulo_projeto"
+        :description="project.descricao"
+        @click="selectProject(project)"
+      />
     </div>
 
     <!-- Modal Criar Projeto -->
     <Modal title="Criar Projeto" v-model:show="showCreateModal">
-      <form @submit.prevent="submitForm">
+      <form @submit.prevent="submitCreateProject">
         <div class="form-group">
           <label>Título do Projeto *</label>
-          <input v-model="form.titulo_projeto" type="text" placeholder="Digite o título" required />
+          <input
+            v-model="form.titulo_projeto"
+            type="text"
+            placeholder="Digite o título"
+            required
+          />
         </div>
 
         <div class="form-group">
           <label>Descrição do Projeto *</label>
-          <textarea v-model="form.descricao" placeholder="Digite a descrição" required />
+          <textarea
+            v-model="form.descricao"
+            placeholder="Digite a descrição"
+            required
+          />
         </div>
 
         <div class="form-group">
-          <label>CPF *</label>
-          <input v-model="form.cpf" type="text" placeholder="Digite seu CPF" required />
+          <label>Senha do Projeto *</label>
+          <input
+            v-model="form.senha"
+            type="password"
+            placeholder="Crie uma senha para o projeto"
+            required
+          />
         </div>
 
         <Button text="Criar" mode="black" type="submit" />
       </form>
     </Modal>
 
-
     <!-- Modal Ingressar em Projeto -->
     <Modal title="Ingressar em um Projeto" v-model:show="showJoinModal">
-      <form @submit.prevent="submitJoinForm">
+      <form @submit.prevent="submitJoinProject">
         <div class="form-group">
-          <label>
-            ID do Projeto
-            <Tooltip text="Os membros da sua equipe usarão essa senha para ingressar no projeto." />
-          </label>
-          <input v-model="joinForm.projectId" type="text" placeholder="Digite o ID do projeto" required />
+          <label>ID do Projeto *</label>
+          <input
+            v-model="joinForm.id_projeto"
+            type="number"
+            placeholder="Digite o ID do projeto"
+            required
+          />
         </div>
 
         <div class="form-group">
-          <label>Senha de ingresso *</label>
-          <input v-model="joinForm.password" type="password" placeholder="Digite a senha" required />
+          <label>Senha *</label>
+          <input
+            v-model="joinForm.senha"
+            type="password"
+            placeholder="Digite a senha do projeto"
+            required
+          />
         </div>
 
         <div v-if="joinError" class="error">{{ joinError }}</div>
@@ -63,72 +105,74 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 import { useProject, useProjectsList } from '@/composables/useProject'
-import { criarProjeto, ProjetoData, listarProjetos, ProjetoResponse } from '@/server/services/projectService'
+import { listarProjetos, criarProjeto, entrarProjeto } from '@/server/services/projectService'
 import { useToasts } from '@/composables/useToast'
 
-const projects = useProjectsList() // lista global
-const currentProject = useProject() // state do projeto selecionado
+const toast = useToasts()
+const auth = useAuth()
+
+const ready = ref(false)
+const projects = useProjectsList()
+const currentProject = useProject()
 
 const showCreateModal = ref(false)
 const showJoinModal = ref(false)
+const joinError = ref('')
 
-const router = useRouter()
-const toast = useToasts()
+const form = ref({ titulo_projeto: '', descricao: '', senha: '' })
+const joinForm = ref({ id_projeto: '', senha: '', cargo: 'Desenvolvedor' })
 
-// Formulário de criar projeto
-const form = ref<ProjetoData>({
-  titulo_projeto: '',
-  descricao: '',
-  cpf: ''
-})
+onMounted(async () => {
+  if (!auth.value.token) return navigateTo('/login')
 
-// Formulário de ingressar projeto
-const joinForm = ref({
-  projectId: '',
-  password: ''
-})
+  ready.value = true
 
-// Criar projeto
-const submitForm = async () => {
   try {
-    const projetoCriado = await criarProjeto(form.value)
-    projects.value.push(projetoCriado)
+    const data = await listarProjetos(auth.value.token!)
+    projects.value = Array.isArray(data) ? data : []
+  } catch (e: any) {
+    toast.error(e.message || 'Erro ao listar projetos')
+  }
+})
+
+const submitCreateProject = async () => {
+  try {
+    const novo = await criarProjeto(form.value, auth.value.token!)
+    projects.value.push(novo)
     showCreateModal.value = false
-    form.value = { titulo_projeto: '', descricao: '', cpf: '' }
+    form.value = { titulo_projeto: '', descricao: '', senha: '' }
     toast.success('Projeto criado com sucesso!')
   } catch (e: any) {
     toast.error(e.message || 'Erro ao criar projeto')
   }
 }
 
-// Ingressar em projeto
-const submitJoinForm = async () => {
+const submitJoinProject = async () => {
   try {
-    console.log('Ingressar no projeto:', joinForm.value)
+    await entrarProjeto(joinForm.value, auth.value.token!)
     showJoinModal.value = false
-    joinForm.value = { projectId: '', password: '' }
+    joinForm.value = { id_projeto: '', senha: '', cargo: 'Desenvolvedor' }
     toast.success('Ingressou no projeto com sucesso!')
   } catch (e: any) {
-    toast.error(e.message || 'Erro ao ingressar no projeto')
+    joinError.value = e.message || 'Erro ao ingressar no projeto'
+    toast.error(joinError.value)
   }
 }
 
-// Seleciona projeto e redireciona para configuração
-const selectProject = (project: ProjetoResponse) => {
+const selectProject = (project: any) => {
   currentProject.value = project
-  router.push('/configuration')
+  navigateTo('/configuration')
 }
 
-// Define ícones para cada projeto
 function getIcon(name: string) {
   if (name.toLowerCase().includes('shop')) return 'ShoppingBag'
   if (name.toLowerCase().includes('alpha')) return 'Calendar'
   return 'FolderKanban'
 }
-
 </script>
+
 
 <style scoped>
 .projects-grid {
@@ -139,12 +183,21 @@ function getIcon(name: string) {
   padding: 12px 5%;
 }
 
+.empty-state {
+  text-align: center;
+  margin-top: 80px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.empty-state p:first-child {
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
 .error {
   color: #ff4d4f;
-  /* vermelho forte */
-  font-weight: 500;
   background-color: #fff1f0;
-  /* leve fundo para destacar */
   padding: 6px 10px;
   border-radius: 4px;
   margin-top: 8px;

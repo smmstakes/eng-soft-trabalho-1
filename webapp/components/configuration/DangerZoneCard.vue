@@ -25,47 +25,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
+import { useProject } from '@/composables/useProject'
+import { useRouter } from 'vue-router'
+import { useToasts } from '@/composables/useToast'
 
-const project = useProject();
-const router = useRouter();
-const toasts = useToasts();
+const project = useProject()
+const router = useRouter()
+const toasts = useToasts()
 
-const isModalVisible = ref(false);
+const isModalVisible = ref(false)
 
-const openConfirmationModal = () => {
-  isModalVisible.value = true;
-};
-
-const closeConfirmationModal = () => {
-  isModalVisible.value = false;
-};
+const openConfirmationModal = () => (isModalVisible.value = true)
+const closeConfirmationModal = () => (isModalVisible.value = false)
 
 const handleDeleteConfirm = async () => {
-  if (!project.value) {
-    toasts.error('Nenhum projeto selecionado para deletar.');
-    return;
-  }
-  
+  if (!project.value) return toasts.error('Nenhum projeto selecionado.')
   try {
-    await $fetch(`/api/projects/${project.value.id}`, {
-      method: 'DELETE',
-    });
-
-    toasts.success(`Projeto "${project.value.name}" deletado com sucesso!`);
-    router.push('/homePage'); 
-    
-    // Limpar o estado após o redirecionamento.
-    // Recarregar a lista de projetos na página para onde for redirecionado.
-
-  } catch (error) {
-    toasts.error("Não foi possível deletar o projeto.");
-
+    // await $fetch(`/api/projects/${project.value.id}`, { method: 'DELETE' })
+    toasts.success(`Projeto "${project.value.titulo_projeto}" deletado!`)
+    router.push('/projects')
+  } catch {
+    toasts.error('Não foi possível deletar o projeto.')
   } finally {
-    closeConfirmationModal();
+    closeConfirmationModal()
   }
-};
+}
 </script>
+
 
 <style scoped>
 .danger-zone-card {
