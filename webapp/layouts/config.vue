@@ -67,4 +67,5 @@ const handleProjectSelection = (selected: Project) => {
 .main-content {
   flex-grow: 1;
 }
+
 </style>
