@@ -3,7 +3,7 @@
 		
 		<div class="selector-header" @click="toggleDropdown">
 			<div class="project-info">
-				<span class="project-name">Projeto {{ selectedProject!.name }}</span>
+				<span class="project-name">Projeto {{ selectedProject?.titulo_projeto }}</span>
 			</div>
 
 			<ChevronDown class="chevron-icon" :class="{ 'is-rotated': isDropdownOpen }" />
@@ -15,7 +15,7 @@
 						:key="project.id"
 						@click="onProjectSelect(project)"
 				>
-						Projeto {{ project.name }}
+						Projeto {{ project.titulo_projeto }}
 				</li>
 			</ul>
 			<a href="/projects/new" class="new-project-button">
@@ -35,30 +35,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { ChevronDown, Plus } from 'lucide-vue-next';
-import type { Project } from '../../composables/useProject';
+import { useProject, useProjectsList, type ProjetoResponse as Project } from '@/composables/useProject';
 
-
-const props = defineProps<{
-	projects: Project[]
-}>();
+const projects = useProjectsList();
+const selectedProject = useProject();
 
 const emit = defineEmits(['projectSelected']);
 
-const selectedProject = useProject();
-
-
 const isDropdownOpen = ref(false);
 const toggleDropdown = () => {
-    isDropdownOpen.value = !isDropdownOpen.value;
+  isDropdownOpen.value = !isDropdownOpen.value;
 };
 
 const onProjectSelect = (project: Project) => {
-	emit('projectSelected', project);
-	isDropdownOpen.value = false;
+  selectedProject.value = project; // Atualiza o estado global
+  emit('projectSelected', project);
+  isDropdownOpen.value = false;
 };
+
+// Atualiza o nome exibido quando o projeto selecionado muda
+watch(selectedProject, (newProj) => {
+  if (newProj) {
+	return
+  }
+});
 </script>
+
 
 <style scoped>
 .project-selector {

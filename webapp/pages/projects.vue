@@ -113,10 +113,7 @@ import { useToasts } from '@/composables/useToast'
 const toast = useToasts()
 const auth = useAuth()
 
-// o middleware garante que já há token
-const token = auth.value.token!
-const authUser = auth.value.user!
-
+const ready = ref(false)
 const projects = useProjectsList()
 const currentProject = useProject()
 
@@ -124,48 +121,37 @@ const showCreateModal = ref(false)
 const showJoinModal = ref(false)
 const joinError = ref('')
 
-// Criar projeto
-const form = ref({
-  titulo_projeto: '',
-  descricao: '',
-  senha: ''
-})
-
-// Entrar em projeto
-const joinForm = ref({
-  id_projeto: '',
-  senha: '',
-  cargo: 'Desenvolvedor'
-})
+const form = ref({ titulo_projeto: '', descricao: '', senha: '' })
+const joinForm = ref({ id_projeto: '', senha: '', cargo: 'Desenvolvedor' })
 
 onMounted(async () => {
+  if (!auth.value.token) return navigateTo('/login')
+
+  ready.value = true
+
   try {
-    const data = await listarProjetos(token)
+    const data = await listarProjetos(auth.value.token!)
     projects.value = Array.isArray(data) ? data : []
   } catch (e: any) {
     toast.error(e.message || 'Erro ao listar projetos')
   }
 })
 
-// Criar projeto
 const submitCreateProject = async () => {
   try {
-    const novo = await criarProjeto(form.value, token)
+    const novo = await criarProjeto(form.value, auth.value.token!)
     projects.value.push(novo)
     showCreateModal.value = false
     form.value = { titulo_projeto: '', descricao: '', senha: '' }
     toast.success('Projeto criado com sucesso!')
   } catch (e: any) {
-    console.log(e);
-    
     toast.error(e.message || 'Erro ao criar projeto')
   }
 }
 
-// Entrar em projeto
 const submitJoinProject = async () => {
   try {
-    await entrarProjeto(joinForm.value, token)
+    await entrarProjeto(joinForm.value, auth.value.token!)
     showJoinModal.value = false
     joinForm.value = { id_projeto: '', senha: '', cargo: 'Desenvolvedor' }
     toast.success('Ingressou no projeto com sucesso!')
@@ -175,19 +161,18 @@ const submitJoinProject = async () => {
   }
 }
 
-// Selecionar projeto
 const selectProject = (project: any) => {
   currentProject.value = project
   navigateTo('/configuration')
 }
 
-// Ícones
 function getIcon(name: string) {
   if (name.toLowerCase().includes('shop')) return 'ShoppingBag'
   if (name.toLowerCase().includes('alpha')) return 'Calendar'
   return 'FolderKanban'
 }
 </script>
+
 
 <style scoped>
 .projects-grid {

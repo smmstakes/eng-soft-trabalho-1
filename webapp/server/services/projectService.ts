@@ -12,7 +12,7 @@ export const listarProjetos = async (token: string) => {
   console.log(auth.value.token);
   
   const res = await api.get('/projetos/', {
-    headers: { Authorization: `Bearer ${auth.value.token}` },
+    headers: { Authorization: `Bearer ${token}` },
   })
   return res.data
 }

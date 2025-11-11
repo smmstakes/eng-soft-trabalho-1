@@ -12,24 +12,11 @@ export interface AuthState {
 
 export const useAuth = () =>
   useState<AuthState>('auth', () => ({
-    token: null,
-    user: null
+    token: process.client ? localStorage.getItem('token') : null,
+    user: process.client && localStorage.getItem('user')
+      ? JSON.parse(localStorage.getItem('user')!)
+      : null
   }))
-
-export const initAuth = () => {
-  if (process.client) {
-    const auth = useAuth()
-    const token = localStorage.getItem('token')
-    const user = localStorage.getItem('user')
-
-    if (token && user) {
-      auth.value = {
-        token,
-        user: JSON.parse(user)
-      }
-    }
-  }
-}
 
 export const setAuth = (token: string, user: AuthUser) => {
   const auth = useAuth()
@@ -49,9 +36,4 @@ export const clearAuth = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
   }
-}
-
-export const isAuthenticated = () => {
-  const auth = useAuth()
-  return !!auth.value.token
 }

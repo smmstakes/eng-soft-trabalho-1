@@ -34,49 +34,47 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
-import { Copy } from 'lucide-vue-next';
+import { ref, watchEffect } from 'vue'
+import { useProject } from '@/composables/useProject'
+import { Copy } from 'lucide-vue-next'
+import { useToasts } from '@/composables/useToast'
 
-const toasts = useToasts();
+const project = useProject()
+const toasts = useToasts()
 
-const project = useProject();
-
-const form = ref({
-  name: '',
-  description: '',
-});
+const form = ref({ name: '', description: '' })
 
 watchEffect(() => {
   if (project.value) {
-    form.value.name = project.value.name;
-    form.value.description = project.value.description;
+    form.value.name = project.value.titulo_projeto || project.value.name
+    form.value.description = project.value.descricao || project.value.description
   }
-});
-
+})
 
 const copyProjectId = async () => {
-  if (!project.value) return;
+  if (!project.value) return
   try {
-    await navigator.clipboard.writeText(project.value.projectId);
-    toasts.success('ID do projeto copiado!'); 
-  } catch (err) {
-    toasts.error('Não foi possível copiar o ID.');
+    await navigator.clipboard.writeText(project.value.id.toString())
+    toasts.success('ID do projeto copiado!')
+  } catch {
+    toasts.error('Não foi possível copiar o ID.')
   }
-};
+}
 
-
-const saveChanges = () => {
-  if (!project.value) return;
-
-  // Exemplo:
-  // await $fetch(`/api/projects/${project.value.id}`, {
-  //   method: 'PATCH',
-  //   body: form.value
-  // });
-
-  toasts.success(`Alterações para o projeto "${form.value.name}" salvas!`);
-};
+const saveChanges = async () => {
+  if (!project.value) return
+  try {
+    // Persistir alterações via API se necessário
+    // await $fetch(`/api/projects/${project.value.id}`, { method: 'PATCH', body: form.value })
+    project.value.titulo_projeto = form.value.name
+    project.value.descricao = form.value.description
+    toasts.success(`Alterações para "${form.value.name}" salvas!`)
+  } catch {
+    toasts.error('Não foi possível salvar alterações.')
+  }
+}
 </script>
+
 
 <style scoped>
 .settings-card {
