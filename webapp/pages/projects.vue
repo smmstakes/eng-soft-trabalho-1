@@ -141,7 +141,6 @@ function getIcon(name: string) {
 
 .error {
   color: #ff4d4f;
-  /* vermelho forte */
   font-weight: 500;
   background-color: #fff1f0;
   /* leve fundo para destacar */
