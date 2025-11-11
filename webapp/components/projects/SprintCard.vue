@@ -1,45 +1,54 @@
 <template>
   <div class="sprint-list-card">
-    <h2>Sprints do Projeto {{ project.value?.name }}</h2>
+    <div class="sprint-header">
+      <h3>{{ sprint.titulo }}</h3>
+      <span class="sprint-status" :class="statusClass(sprint.status)">
+        {{ sprint.status || 'Não iniciado' }}
+      </span>
+    </div>
 
-    <div class="sprint-item" v-for="sprint in sprints.value" :key="sprint.id">
-      <div class="sprint-header">
-        <h3>{{ sprint.titulo }}</h3>
-        <span class="sprint-status" :class="statusClass(sprint.status)">
-          {{ sprint.status }}
-        </span>
-      </div>
+    <div class="sprint-dates">
+      <span>Início: {{ formatDate(sprint.inicio) }}</span>
+      <span>Término: {{ formatDate(sprint.termino) }}</span>
+    </div>
 
-      <div class="sprint-dates">
-        <span>Início: {{ formatDate(sprint.inicio) }}</span>
-        <span>Término: {{ formatDate(sprint.termino) }}</span>
-      </div>
+    <div class="sprint-goals" v-if="sprint.metas && sprint.metas.length">
+      <strong>Metas:</strong>
+      <ul>
+        <li v-for="goal in sprint.metas" :key="goal.id">{{ goal.titulo }}</li>
+      </ul>
+    </div>
 
-      <div class="sprint-goals" v-if="sprint.metas?.length">
-        <strong>Metas:</strong>
-        <ul>
-          <li v-for="goal in sprint.metas" :key="goal.id">{{ goal.titulo }}</li>
-        </ul>
-      </div>
+    <div class="sprint-goals" v-else>
+      <em>Sem metas cadastradas</em>
     </div>
   </div>
-
-
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useProject, useProjectSprints } from '@/composables/useProject';
-import { listarSprintsDoProjeto } from '@/server/services/projectService';
-import { useAuth } from '@/composables/useAuth';
+import { defineProps } from 'vue';
 
-const project = useProject();
-const sprints = useProjectSprints();
-const auth = useAuth();
+interface Goal {
+  id: number | string;
+  titulo: string;
+}
+
+interface Sprint {
+  id: number | string;
+  titulo: string;
+  status?: string;
+  inicio?: string;
+  termino?: string;
+  metas?: Goal[];
+}
+
+const props = defineProps<{
+  sprint: Sprint;
+}>();
 
 // Converte status para classes CSS
-const statusClass = (status: string) => {
-  switch (status.toLowerCase()) {
+const statusClass = (status?: string) => {
+  switch (status?.toLowerCase()) {
     case 'em andamento':
       return 'status-running';
     case 'concluida':
@@ -56,42 +65,15 @@ const formatDate = (date?: string) => {
   if (!date) return '-';
   return new Date(date).toLocaleDateString('pt-BR');
 };
-
-// Carrega sprints do projeto ao montar o componente
-onMounted(async () => {
-  if (project.value) {
-    try {
-      const data = await listarSprintsDoProjeto(project.value.id, auth.value.token!);
-      sprints.value = data;
-    } catch (err: any) {
-      console.error('Erro ao carregar sprints:', err);
-      sprints.value = [];
-    }
-  }
-});
 </script>
 
 <style scoped>
-/* mantém o estilo que você já tinha */
 .sprint-list-card {
   background-color: #ffffff;
   border: 1px solid #E5E5E5;
   border-radius: 8px;
   padding: 24px;
   max-width: 964px;
-}
-
-h2 {
-  margin: 0 0 16px 0;
-  font-weight: 500;
-  font-size: 1.25rem;
-  color: #171717;
-}
-
-.sprint-item {
-  border: 1px solid #d4d4d8;
-  border-radius: 8px;
-  padding: 16px;
   margin-bottom: 16px;
 }
 

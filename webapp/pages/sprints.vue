@@ -1,96 +1,182 @@
 <template>
-    <div class="main-wrapper">
-        <Header title="Sprints" description="Gerencie e acompanhe o progresso das suas sprints">
-            <Button @click="showCreateModal = true" text="+ Criar Nova Sprint" mode="black" />
-        </Header>
+  <div class="main-wrapper">
+    <!-- Header -->
+    <Header title="Sprints" description="Gerencie e acompanhe o progresso das suas sprints">
+      <Button @click="showCreateModal = true" text="+ Criar Nova Sprint" mode="black" />
+    </Header>
 
-        <!-- <div class="main-content">
-            <div class="mt-8" v-if="sprints.value.length > 0">
-                <SprintCard v-for="sprint in sprints.value" :key="sprint.id" :sprint="sprint" />
-            </div>
+    <!-- Lista de Sprints -->
+    <div class="main-content">
+      <template v-if="sprints.value && sprints.value.length > 0">
+        <div class="mt-8" v-for="sprint in sprints.value" :key="sprint.id">
+          <SprintCard
+            :sprint="{
+              id: sprint.id,
+              titulo: sprint.meta || sprint.titulo,
+              status: sprint.status || sprint.situacao,
+              inicio: sprint.inicio,
+              termino: sprint.termino,
+              metas: sprint.metas || []
+            }"
+          />
+        </div>
+      </template>
 
-            <div class="mt-8" v-else>
-                <p>Ainda não há sprints cadastradas para este projeto.</p>
-            </div>
-        </div> -->
-
-
-        <Modal title="Criar Sprint" v-model:show="showCreateModal">
-            <form @submit.prevent="submitCreateSprint">
-                <div class="form-group">
-                    <label>Título *</label>
-                    <input v-model="form.meta" type="text" placeholder="Digite o título" required />
-                </div>
-
-                <div class="form-group">
-                    <label>Meta *</label>
-                    <textarea v-model="form.inicio" placeholder="Digite a data de início" required />
-                </div>
-
-                <div class="form-group">
-                    <label>Término *</label>
-                    <textarea v-model="form.termino" placeholder="Digite a data de término" required />
-                </div>
-
-                <div class="form-group">
-                    <label>Revisão da Sprint</label>
-                    <textarea v-model="form.revisao_sprint" placeholder="Digite a revisão" />
-                </div>
-
-                <Button text="Criar" mode="black" type="submit" />
-            </form>
-        </Modal>
+      <div class="mt-8 empty-state" v-else>
+        <p>Ainda não tem nada por aqui.<br>
+           Comece criando uma sprint!
+        </p>
+      </div>
     </div>
+
+    <!-- Modal de criação -->
+    <Modal title="Criar Sprint" v-model:show="showCreateModal">
+      <form @submit.prevent="submitCreateSprint">
+        <div class="form-group">
+          <label>Título *</label>
+          <input v-model="form.meta" type="text" placeholder="Digite o título" required />
+        </div>
+
+        <div class="form-group">
+          <label>Meta *</label>
+          <input v-model="form.meta_sprint" type="text" placeholder="Digite a meta da sprint" required />
+        </div>
+
+        <div class="form-group date-row">
+          <div>
+            <label>Data de Início *</label>
+            <input v-model="form.inicio" type="date" required />
+          </div>
+          <div>
+            <label>Data de Término</label>
+            <input v-model="form.termino" type="date" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Revisão da Sprint</label>
+          <textarea v-model="form.revisao_sprint" placeholder="Digite a revisão"></textarea>
+        </div>
+
+        <Button text="Criar" mode="black" type="submit" />
+      </form>
+    </Modal>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useProject, useProjectSprints } from '@/composables/useProject';
-import { criarSprint } from '@/server/services/projectService';
-import { useAuth } from '@/composables/useAuth';
+import { ref, onMounted } from 'vue';
+// import Header from '@/components/Header.vue';
+// import Button from '@/components/Button.vue';
+// import Modal from '@/components/Modal.vue';
+// import SprintCard from '@/components/SprintCard.vue';
 
-definePageMeta({ layout: 'config' })
+import { useProject, useProjectSprints } from '@/composables/useProject';
+import { useAuth } from '@/composables/useAuth';
+import { criarSprint, listarSprintsDoProjeto } from '@/server/services/projectService';
+
+definePageMeta({ layout: 'config' });
 
 const project = useProject();
 const sprints = useProjectSprints();
-const auth = useAuth();
 
+// Garante que sprints.value seja sempre um array
+if (!sprints.value) sprints.value = [];
+
+const auth = useAuth();
 const showCreateModal = ref(false);
 
 const form = ref({
-    meta: '',
-    inicio: '',
-    termino: '',
-    revisao_sprint: ''
+  meta: '',
+  meta_sprint: '',
+  inicio: '',
+  termino: '',
+  revisao_sprint: ''
 });
 
 const submitCreateSprint = async () => {
-    if (!project.value) return;
+  if (!project.value) return;
+  if (!auth.value.token) return alert('Usuário não autenticado');
 
-    try {
-        const novaSprint = await criarSprint(project.value.id, form.value, auth.value.token!);
-        sprints.value.push(novaSprint);
+  try {
+    const novaSprint = await criarSprint(project.value.id, form.value, auth.value.token);
+    sprints.value.push(novaSprint);
 
-        showCreateModal.value = false;
-        form.value = { meta: '', inicio: '', termino: '', revisao_sprint: '' };
-    } catch (err: any) {
-        console.error(err);
-        alert(err.message || 'Erro ao criar sprint');
-    }
+    // Resetar formulário e fechar modal
+    form.value = { meta: '', meta_sprint: '', inicio: '', termino: '', revisao_sprint: '' };
+    showCreateModal.value = false;
+  } catch (err: any) {
+    console.error(err);
+    alert(err.message || 'Erro ao criar sprint');
+  }
 };
+
+// Carregar sprints ao montar o componente
+onMounted(async () => {
+  if (project.value && auth.value.token) {
+    try {
+      const data = await listarSprintsDoProjeto(project.value.id, auth.value.token);
+      sprints.value = data || [];
+    } catch (err: any) {
+      console.error('Erro ao carregar sprints:', err);
+      sprints.value = [];
+    }
+  }
+});
 </script>
 
 <style scoped>
 .mt-8 {
-    margin-top: 24px;
+  margin-top: 24px;
 }
 
 .main-content {
-    padding: 20px 32px;
+  padding: 20px 32px;
 }
 
 .main-content p {
-    font-size: 1rem;
-    color: #6b7280;
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d4d4d8;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.date-row {
+  display: flex;
+  gap: 16px;
+}
+
+.date-row div {
+  flex: 1;
+}
+
+.empty-state p {
+  text-align: left;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 30px;
+  color: #525252;
+}
+
+.main-content {
+  padding: 20px 35px;
 }
 </style>
