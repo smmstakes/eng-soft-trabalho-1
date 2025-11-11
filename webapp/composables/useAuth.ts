@@ -10,12 +10,26 @@ export interface AuthState {
   user: AuthUser | null
 }
 
-export const useAuth = () => useState<AuthState>('auth', () => ({
-  token: process.client ? localStorage.getItem('token') || null : null,
-  user: process.client
-    ? JSON.parse(localStorage.getItem('user') || 'null')
-    : null
-}))
+export const useAuth = () =>
+  useState<AuthState>('auth', () => ({
+    token: null,
+    user: null
+  }))
+
+export const initAuth = () => {
+  if (process.client) {
+    const auth = useAuth()
+    const token = localStorage.getItem('token')
+    const user = localStorage.getItem('user')
+
+    if (token && user) {
+      auth.value = {
+        token,
+        user: JSON.parse(user)
+      }
+    }
+  }
+}
 
 export const setAuth = (token: string, user: AuthUser) => {
   const auth = useAuth()

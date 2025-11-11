@@ -48,12 +48,10 @@
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { loginUser } from '@/server/services/userService'
-import { useRouter } from 'vue-router'
 import { setAuth } from '@/composables/useAuth'
 
 // composables e libs
 const toast = useToast()
-const router = useRouter()
 
 // estado do formulário
 const credentials = ref({
@@ -103,7 +101,8 @@ const submitLogin = async () => {
     })
 
     toast.success('Login realizado com sucesso!')
-    router.push('/projects')
+
+    await navigateTo('/projects')
   } catch (e: any) {
     console.error('Erro ao fazer login:', e)
     toast.error(e.message)
@@ -112,5 +111,5 @@ const submitLogin = async () => {
 </script>
 
 <style scoped>
-
+/* seu estilo aqui */
 </style>

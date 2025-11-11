@@ -1,5 +1,9 @@
 <template>
-  <div class="card" @click="goToProject">
+  <NuxtLink
+    :to="'/configuration'"
+    class="card"
+    @click.prevent="setProject"
+  >
     <div class="icon-container">
       <component :is="icon" class="icon" />
     </div>
@@ -7,12 +11,11 @@
       <h3 class="card-title">{{ title }}</h3>
       <p class="card-description">{{ description }}</p>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
 import { useProject } from '@/composables/useProject'
-import { useRouter } from 'vue-router'
 import * as icons from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -23,11 +26,10 @@ const props = defineProps<{
   icon?: string
 }>()
 
-const router = useRouter()
 const projectState = useProject()
 const icon = icons[props.icon || 'FolderKanban'] || icons.FolderKanban
 
-const goToProject = () => {
+const setProject = () => {
   projectState.value = {
     id: props.id || 0,
     projectId: props.projectId,
@@ -35,7 +37,6 @@ const goToProject = () => {
     description: props.description,
     sprintStatus: ''
   }
-  router.push('/configuration')
 }
 </script>
 
@@ -50,6 +51,7 @@ const goToProject = () => {
   background-color: #fff;
   cursor: pointer;
   transition: box-shadow 0.2s ease, transform 0.1s ease;
+  text-decoration: none;
 }
 .card:hover {
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);

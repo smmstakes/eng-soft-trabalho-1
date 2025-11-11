@@ -81,8 +81,8 @@ def buscar_projetos_por_cpf_dono(cpf_dono: str):
         result = conn.execute(stmt)
         projetos_do_cpf = [dict(row) for row in result.mappings()]
 
-    if not projetos_do_cpf:
-        raise LookupError("projeto do cpf {cpf_dono} não encontrado")
+    # if not projetos_do_cpf:
+        # raise LookupError("projeto do cpf {cpf_dono} não encontrado")
 
     return projetos_do_cpf
 

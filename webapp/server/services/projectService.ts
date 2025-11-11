@@ -1,35 +1,32 @@
 import api from '../api'
+import { useAuth } from '@/composables/useAuth'
+const auth = useAuth()
 
 export interface ProjetoData {
-    titulo_projeto: string
-    descricao: string
-    cpf: string
+  titulo_projeto: string
+  descricao: string
+  senha: string
 }
 
-export interface ProjetoResponse {
-    id: number
-    titulo: string
-    descricao: string
-    cpf_dono: string
-    sprintStatus?: string
+export const listarProjetos = async (token: string) => {
+  console.log(auth.value.token);
+  
+  const res = await api.get('/projetos/', {
+    headers: { Authorization: `Bearer ${auth.value.token}` },
+  })
+  return res.data
 }
 
-export const criarProjeto = async (projeto: ProjetoData): Promise<ProjetoResponse> => {
-    try {
-        const res = await api.post('/projetos/', projeto)
-        return res.data
-    } catch (error: any) {
-        const msg = error.response.data.erro
-        throw new Error(msg)
-    }
+export const criarProjeto = async (projeto: ProjetoData, token: string) => {
+  const res = await api.post('/projetos/', projeto, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return res.data
 }
 
-export const listarProjetos = async (): Promise<ProjetoResponse[]> => {
-    const res = await api.get('/projetos/')
-    return res.data
-}
-
-export const buscarProjetoPorId = async (id: number): Promise<ProjetoResponse> => {
-    const res = await api.get(`/projetos/${id}`)
-    return res.data
+export const entrarProjeto = async (dados: any, token: string) => {
+  const res = await api.post('/projetos/entrar', dados, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  return res.data
 }
