@@ -66,3 +66,28 @@ def listar_tasks():
 
     except Exception as e:
         return jsonify({"erro": str(e)}), 500
+
+@task_bp.route("/<int:id_task>", methods=["DELETE"])
+@jwt_required()
+def deletar_task(id_task):
+    try:
+        cpf_do_usuario = get_jwt_identity()
+        tasks = task_rep.listar_task(id_task = id_task)
+
+        if not tasks:
+            raise ValueError(f"Task {id_task} não encontrada")
+
+        task_a_ser_delatada = tasks[0]
+        if task_a_ser_delatada['cpf'] != cpf_do_usuario:
+            return jsonify({'erro': 'Acesso proibido. Você não é o dono desta task.'}), 403
+
+        task_rep.deletar_task(id_task)
+        return jsonify({"mensagem": f"Task {id_task} deletada com sucesso"}), 200
+
+    except ValueError as e:
+        return jsonify({"erro": str(e)}), 404
+
+    except ConnectionError as e:
+        return jsonify({"erro": str(e)}), 500
+    except Exception as e:
+        return jsonify({"erro": f"Erro inesperado: {str(e)}"}), 500

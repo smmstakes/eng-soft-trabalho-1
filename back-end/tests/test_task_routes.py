@@ -144,6 +144,44 @@ def test_criar_task(client, setup_para_task):
             except Exception as e:
                 print(f"AVISO: Falha ao limpar a task {id_task_criada}: {e}")
 
+def test_deletar_tasks(client, setup_para_task):
+    id_task_criada = None
+    try:
+        id_sprint_criada = setup_para_task["id_sprint"]
+        cpf_do_usuario = setup_para_task["cpf"]
+        token = setup_para_task["token"]
+        headers = {'Authorization': f'Bearer {token}'}
+
+        id_task_criada = task_rep.adicionar_task(id_sprint = id_sprint_criada,
+                                                   cpf = cpf_do_usuario,
+                                                   ** DADOS_TASK)
+
+        assert id_task_criada is not None, "Falha no setup do teste de deleção"
+        response_del = client.delete(f"/api/tasks/{id_task_criada}", headers = headers)
+
+        assert response_del.status_code == 200, (
+            f"Esperado 200 ao deletar task, obteve {response_del.status_code}. Body: {response_del.get_data(as_text = True)}"
+        )
+        data_del = response_del.get_json()
+        assert "mensagem" in data_del
+        assert str(id_task_criada) in data_del["mensagem"], "Mensagem de sucesso ausente ou incorreta"
+        tasks_obj = task_rep.listar_task(id_task = id_task_criada)
+        if tasks_obj != []:
+            assert False, f"Task {id_task_criada} ainda existe no repositório ({tasks_obj}) após deleção via API"
+        response_del_2 = client.delete(f"/api/tasks/{id_task_criada}", headers = headers)
+        assert response_del_2.status_code == 404, (
+            f"Esperado 404 ao deletar task já removida, obteve {response_del_2.status_code}"
+        )
+        id_task_criada = None
+
+    finally:
+        if id_task_criada:
+            try:
+                task_rep.deletar_task(id_task_criada)
+            except Exception as e:
+                print(f"AVISO: Falha ao limpar a task {id_task_criada}: {e}")
+
+
 def test_listar_tasks(client, setup_para_task):
     id_sprint_criada_1 = None
     id_sprint_criada_2 = None

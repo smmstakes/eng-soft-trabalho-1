@@ -45,9 +45,10 @@ DADOS_USER_STORY_2 = {
 }
 
 @pytest.fixture
-def setup_para_user_story():
+def setup_para_user_story(client):
     id_projeto_criado = None
     cpf_usuario =  DADOS_USUARIO["cpf"]
+    token_de_acesso = None
 
     try:
         try:
@@ -57,6 +58,9 @@ def setup_para_user_story():
             if "já existem" not in str(e):
                 raise e
             print(f"\nAVISO SETUP: Usuário {cpf_usuario} já existe.")
+
+        with client.application.app_context():
+            token_de_acesso = create_access_token(identity = cpf_usuario)
 
         id_projeto_criado = projeto_rep.adicionar_projeto(
             titulo = DADOS_PROJETO["titulo_projeto"],
@@ -69,7 +73,8 @@ def setup_para_user_story():
 
         yield {
             "cpf": cpf_usuario,
-            "id_projeto": id_projeto_criado
+            "id_projeto": id_projeto_criado,
+            "token": token_de_acesso
         }
 
     finally:
@@ -119,37 +124,38 @@ def test_criar_user_story(client, setup_para_user_story):
             except Exception as e:
                 print(f"AVISO: Falha ao limpar a user story {id_user_story_criada}: {e}")
 
-#def test_deletar_user_story(client, setup_para_user_story):
-#    id_user_story_criada = None
-#
-#    try:
-#        id_user_story_criada = user_story_rep.adicionar_user_story(
-#            id_projeto = setup_para_user_story["id_projeto"],
-#            **DADOS_USER_STORY
-#        )
-#        assert id_user_story_criada is not None, "Falha ao criar user story para o teste de deleção"
-#        response_del = client.delete(f"/api/users-stories/{id_user_story_criada}")
-#        assert response_del.status_code == 200, (
-#            f"Esperado 200 ao deletar user story, obteve {response_del.status_code}. Body: {response_del.get_data(as_text = True)}"
-#        )
-#        data_del = response_del.get_json()
-#        assert "mensagem" in data_del and str(id_user_story_criada) in data_del["mensagem"], "Mensagem de sucesso ausente ou incorreta"
-#        user_story_obj = user_story_rep.buscar_user_story_por_id(id_user_story_criada)
-#        if user_story_obj != []:
-#            assert False, f"User Story {id_user_story_criada} ainda existe no repositório ({user_story_obj}) após deleção via API"
-#        response_del_2 = client.delete(f"/api/users-stories/{id_user_story_criada}")
-#        assert response_del_2.status_code == 404, (
-#            f"Esperado 404 ao deletar User Story já removida, obteve {response_del_2.status_code}"
-#        )
-#        print(f"\nSUCESSO: User Story {id_user_story_criada} deletada e 404 confirmado.")
-#        id_user_story_criada = None
-#
-#    finally:
-#        if id_user_story_criada:
-#            try:
-#                user_story_rep.deletar_user_story(id_user_story_criada)
-#            except Exception as e:
-#                print(f"AVISO: Falha ao limpar a user story {id_user_story_criada}: {e}")
+def test_deletar_user_story(client, setup_para_user_story):
+    id_user_story_criada = None
+
+    try:
+        id_user_story_criada = user_story_rep.adicionar_user_story(
+            id_projeto = setup_para_user_story["id_projeto"],
+            **DADOS_USER_STORY
+        )
+        assert id_user_story_criada is not None, "Falha ao criar user story para o teste de deleção"
+        headers = {'Authorization': f'Bearer {setup_para_user_story["token"]}'}
+        response_del = client.delete(f"/api/users-stories/{id_user_story_criada}", headers = headers)
+        assert response_del.status_code == 200, (
+            f"Esperado 200 ao deletar user story, obteve {response_del.status_code}. Body: {response_del.get_data(as_text = True)}"
+        )
+        data_del = response_del.get_json()
+        assert "mensagem" in data_del and str(id_user_story_criada) in data_del["mensagem"], "Mensagem de sucesso ausente ou incorreta"
+        user_story_obj = user_story_rep.buscar_user_story_por_id(id_user_story_criada)
+        if user_story_obj != []:
+            assert False, f"User Story {id_user_story_criada} ainda existe no repositório ({user_story_obj}) após deleção via API"
+        response_del_2 = client.delete(f"/api/users-stories/{id_user_story_criada}", headers = headers)
+        assert response_del_2.status_code == 404, (
+            f"Esperado 404 ao deletar User Story já removida, obteve {response_del_2.status_code}"
+        )
+        print(f"\nSUCESSO: User Story {id_user_story_criada} deletada e 404 confirmado.")
+        id_user_story_criada = None
+
+    finally:
+        if id_user_story_criada:
+            try:
+                user_story_rep.deletar_user_story(id_user_story_criada)
+            except Exception as e:
+                print(f"AVISO: Falha ao limpar a user story {id_user_story_criada}: {e}")
 
 def test_listar_users_stories_do_projeto(client, setup_para_user_story):
     id_user_story_criada_1 = None
