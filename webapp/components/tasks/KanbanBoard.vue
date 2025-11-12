@@ -12,22 +12,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import KanbanColumn from './KanbanColumn.vue'
+import { useTasks } from '@/composables/useTasks'
+import { useProjectSprints } from '@/composables/useProject'
 
-interface Task {
-  id: number
-  titulo: string
-  descricao?: string
-  status: string
-}
+const { tasks, carregarTasks, atualizarStatusLocal } = useTasks()
+const sprints = useProjectSprints()
 
-// ✅ MOCK inicial — depois você pode buscar do backend via API
-const tasks = ref<Task[]>([
-  { id: 1, titulo: 'Configurar backend', descricao: 'Criar endpoints', status: 'todo' },
-  { id: 2, titulo: 'Montar layout Kanban', descricao: 'UI inicial', status: 'doing' },
-  { id: 3, titulo: 'Testar login', descricao: 'Fluxo completo', status: 'done' }
-])
+const activeSprint = computed(() => {
+  const now = new Date()
+  return sprints.value.find(s => {
+    const inicio = new Date(s.inicio)
+    const fim = new Date(s.termino)
+    return now >= inicio && now <= fim
+  })
+})
+
 
 const columns = [
   { title: 'A Fazer', status: 'todo' },
@@ -35,16 +36,19 @@ const columns = [
   { title: 'Concluído', status: 'done' }
 ]
 
-// Computed para filtrar tasks por status
-const tasksByStatus = (status: string) => {
-  return tasks.value.filter(t => t.status === status)
+const tasksByStatus = (status: string) =>
+  tasks.value.filter(t => t.nome_estado === status)
+
+const onTaskMoved = ({ task, toStatus }: any) => {
+  atualizarStatusLocal(task.id_task, toStatus)
+  // aqui depois podemos chamar PATCH para atualizar no backend
 }
 
-// Handler quando uma task é movida
-const onTaskMoved = ({ task, toStatus }: { task: Task; toStatus: string }) => {
-  const target = tasks.value.find(t => t.id === task.id)
-  if (target) target.status = toStatus
-}
+onMounted(async () => {
+  if (activeSprint.value) {
+    await carregarTasks(activeSprint.value.id_sprint)
+  }
+})
 </script>
 
 <style scoped>

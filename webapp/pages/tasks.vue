@@ -20,10 +20,10 @@
       </div>
     </div>
 
-    <!-- Modal de criação de tarefa (placeholder) -->
     <Modal title="Criar Tarefa" v-model:show="showCreateTaskModal">
-      <p>A implementação do formulário de criação de tarefa vai aqui.</p>
+      <CreateTaskForm v-if="activeSprint" :idSprint="activeSprint.id_sprint" @created="onTaskCreated" />
     </Modal>
+
   </div>
 </template>
 
@@ -32,8 +32,16 @@ import { ref, onMounted, computed } from 'vue';
 import { useProject, useProjectSprints } from '@/composables/useProject';
 import { useAuth } from '@/composables/useAuth';
 import { listarSprintsDoProjeto } from '@/server/services/projectService';
+import { useTasks } from '@/composables/useTasks'
+const { adicionarTaskLocal } = useTasks()
 
 definePageMeta({ layout: 'config' });
+
+const onTaskCreated = (task: any) => {
+  adicionarTaskLocal(task)
+  showCreateTaskModal.value = false
+}
+
 
 const project = useProject();
 const sprints = useProjectSprints();
@@ -104,5 +112,4 @@ onMounted(async () => {
   line-height: 30px;
   color: #525252;
 }
-
 </style>
