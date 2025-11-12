@@ -3,7 +3,7 @@ import os
 import pytest
 import json
 from typing import Any
-from flask_jwt_extended import create_access_token, create_access_token
+from flask_jwt_extended import create_access_token
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
