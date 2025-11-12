@@ -2,12 +2,7 @@
   <div class="main-wrapper">
     <!-- Header -->
     <Header title="Kanban" :description="headerDescription">
-      <Button 
-        text="+ Criar Tarefa" 
-        mode="black" 
-        :disabled="!activeSprint"
-        @click="showCreateTaskModal = true"
-      />
+      <Button text="+ Criar Tarefa" mode="black" :disabled="!activeSprint" @click="showCreateTaskModal = true" />
     </Header>
 
     <!-- Conteúdo principal -->
@@ -20,9 +15,8 @@
         </p>
       </div>
 
-      <!-- Quadro Kanban (vazio por enquanto) -->
       <div class="kanban-board" v-else>
-        <!-- Aqui você vai preencher o quadro Kanban depois -->
+        <KanbanBoard />
       </div>
     </div>
 
@@ -50,16 +44,34 @@ if (!sprints.value) sprints.value = [];
 
 // Computed: retorna a sprint ativa, se houver
 const activeSprint = computed(() => {
-    console.log(sprints.value)
-  return sprints.value.find(sprint => sprint.status === 'em andamento');
+  if (!sprints.value || sprints.value.length === 0) return null;
+
+  const now = new Date();
+
+  return sprints.value.find(sprint => {
+    const inicio = sprint.inicio ? new Date(sprint.inicio) : null;
+    const termino = sprint.termino ? new Date(sprint.termino) : null;
+
+    if (!inicio) return false; // sprint sem início não pode estar ativa
+
+    // Se ainda não começou
+    if (now < inicio) return false;
+
+    // Se terminou e data de término existe
+    if (termino && now > termino) return false;
+
+    // Se já começou e ainda não terminou
+    return true;
+  }) || null;
 });
+
 
 // Computed: description dinâmica para o Header
 const headerDescription = computed(() => {
   if (!activeSprint.value) {
     return "";
   }
-  return `Sprint ${activeSprint.value.id} - ${activeSprint.value.meta || activeSprint.value.titulo}`;
+  return `Sprint ${activeSprint.value.id_sprint}`;
 });
 
 // Modal de criação de tarefa
@@ -93,11 +105,4 @@ onMounted(async () => {
   color: #525252;
 }
 
-.kanban-board {
-  /* Placeholder vazio para o quadro Kanban */
-  min-height: 300px;
-  border: 1px dashed #d4d4d8;
-  border-radius: 8px;
-  margin-top: 24px;
-}
 </style>
