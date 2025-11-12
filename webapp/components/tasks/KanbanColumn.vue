@@ -1,14 +1,18 @@
 <template>
   <div class="kanban-column" @dragover.prevent @drop="handleDrop">
-    <h3 class="column-title">{{ title }}</h3>
-    <hr />
+    <div class="column-header">
+      <h3 class="column-title">{{ title }}</h3>
+      <span class="task-count">{{ tasks.length }}</span>
+    </div>
+    <hr class="column-divider" />
+
     <div class="task-list">
       <div v-for="task in tasks" :key="taskKey(task)" class="task-card" draggable="true"
         @dragstart="handleDragStart($event, task)">
         <div class="task-main">
           <div class="task-title">{{ taskTitle(task) }}</div>
           <div class="task-meta">
-            <span class="task-level"> {{ taskLevel(task) }}</span>
+            <span class="task-level">{{ taskLevel(task) }}</span>
             <span class="task-status-badge">{{ taskState(task) }}</span>
           </div>
         </div>
@@ -26,10 +30,10 @@
 </template>
 
 <script setup lang="ts">
-
+// (igual ao seu)
 const props = defineProps<{
   title: string
-  tasks: any[] // aceitarmos qualquer shape vindo do backend
+  tasks: any[]
   status: string
 }>()
 
@@ -38,24 +42,16 @@ const emit = defineEmits<{
 }>()
 
 const taskKey = (task: any) => task.id || task.id_task || JSON.stringify(task)
-
-const taskTitle = (task: any) =>
-  task.titulo || task.title || task.descricao_task || task.descricao || 'Tarefa sem título'
-
+const taskTitle = (task: any) => task.titulo || task.title || task.descricao_task || task.descricao || 'Tarefa sem título'
 const taskLevel = (task: any) => task.nivel_task || task.nivel || '—'
-
-const taskState = (task: any) =>
-  task.nome_estado || task.nomeEstado || task.status || ''
+const taskState = (task: any) => task.nome_estado || task.nomeEstado || task.status || ''
 
 const handleDragStart = (event: DragEvent, task: any) => {
-  // pegar apenas os campos necessários para transportar
   const payload = {
     id_task: task.id_task || task.id,
     nome_estado: task.nome_estado || task.nomeEstado || task.status || null
   }
-
   event.dataTransfer?.setData('application/json', JSON.stringify(payload))
-  // permitir efeito de cópia/move
   event.dataTransfer!.effectAllowed = 'move'
 }
 
@@ -65,8 +61,7 @@ const handleDrop = (event: DragEvent) => {
   try {
     const parsed = JSON.parse(data)
     emit('taskMoved', { task: parsed, toStatus: props.status })
-  } catch (e) {
-    // fallback: tentar data default se houver
+  } catch {
     const raw = event.dataTransfer?.getData('task')
     if (raw) {
       const parsed2 = JSON.parse(raw)
@@ -78,24 +73,53 @@ const handleDrop = (event: DragEvent) => {
 
 <style scoped>
 .kanban-column {
-  background: #fafafa;
-  border: 1px solid #e4e4e7;
-  border-radius: 12px;
-  padding: 16px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
   min-width: 280px;
+  min-height: 700px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }
 
-.column-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #27272a;
-  margin-bottom: 8px;
+/* ==== HEADER ==== */
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
 }
 
+.column-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #27272a;
+  margin: 0;
+}
+
+.task-count {
+  background: #E5E7EB;
+  color: #3f3f46;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.column-divider {
+  border: none;
+  border-top: 1px solid #E5E7EB;
+  margin: 8px 0 12px 0;
+}
+
+/* ==== TASKS ==== */
 .task-list {
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -104,8 +128,8 @@ const handleDrop = (event: DragEvent) => {
 
 .task-card {
   background: white;
-  border: 1px solid #e4e4e7;
-  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
   padding: 10px 12px;
   cursor: grab;
   transition: box-shadow 0.15s, transform 0.12s;
@@ -170,6 +194,6 @@ const handleDrop = (event: DragEvent) => {
   font-size: 14px;
   padding: 8px;
   border: 1px dashed #e4e4e7;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 </style>
