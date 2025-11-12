@@ -7,16 +7,15 @@
 
     <!-- Lista de Sprints -->
     <div class="main-content">
-      <template v-if="sprints.value && sprints.value.length > 0">
-        <div class="mt-8" v-for="sprint in sprints.value" :key="sprint.id">
+      <template v-if="sprints.length > 0">
+        <div class="mt-8" v-for="sprint in sprints" :key="sprint.id">
           <SprintCard
             :sprint="{
-              id: sprint.id,
-              titulo: sprint.meta || sprint.titulo,
-              status: sprint.status || sprint.situacao,
+              id: sprint.id_sprint,
+              titulo: sprint.id_sprint,
               inicio: sprint.inicio,
               termino: sprint.termino,
-              metas: sprint.metas || []
+              meta: sprint.meta || []
             }"
           />
         </div>
@@ -32,10 +31,10 @@
     <!-- Modal de criação -->
     <Modal title="Criar Sprint" v-model:show="showCreateModal">
       <form @submit.prevent="submitCreateSprint">
-        <div class="form-group">
+        <!-- <div class="form-group">
           <label>Título *</label>
           <input v-model="form.meta" type="text" placeholder="Digite o título" required />
-        </div>
+        </div> -->
 
         <div class="form-group">
           <label>Meta *</label>
@@ -74,7 +73,7 @@ import { useToast } from 'vue-toastification';
 definePageMeta({ layout: 'config' });
 
 const project = useProject();
-const sprints = useProjectSprints();
+const sprints = ref(useProjectSprints() || []);
 if (!sprints.value) sprints.value = [];
 
 const auth = useAuth();
@@ -108,15 +107,14 @@ const submitCreateSprint = async () => {
 
 // Carregar sprints ao montar o componente
 onMounted(async () => {
-  console.log(sprints.value[0])
+  console.log(sprints.value)
   if (project.value && auth.value.token) {
     try {
       const data = await listarSprintsDoProjeto(project.value.id_projeto, auth.value.token);
       sprints.value = data || [];
     } catch (err: any) {
-      console.error('Erro ao carregar sprints:', err);
       sprints.value = [];
-      toast.error('Erro ao carregar sprints');
+      toast.error('Erro ao carregar sprints. Tente logar novamente.');
     }
   }
 });

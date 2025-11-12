@@ -9,14 +9,14 @@ export interface ProjetoData {
 }
 
 export interface Sprint {
-  id: number
-  titulo: string
+  id_sprint: number
+  titulo?: string
   descricao?: string
   revisao?: string
   inicio?: string
   termino?: string
-  status: 'Em andamento' | 'Concluida' | 'Finalizada'
-  metas?: { id: number; titulo: string }[]
+  status?: 'Em andamento' | 'Concluida' | 'Finalizada'
+  meta?: string
 }
 
 export const listarProjetos = async (token: string) => {

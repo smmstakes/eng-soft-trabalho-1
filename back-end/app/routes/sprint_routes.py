@@ -19,7 +19,7 @@ def criar_sprint():
     revisao_sprint = dados.get('revisao_sprint')
     id_projeto = dados.get('id_projeto')
 
-    if not all([meta, inicio, termino, revisao_sprint, id_projeto]):
+    if not all([meta, inicio, termino, id_projeto]):
         return jsonify({'erro': f'Dados obrigatórios ausentes.'}), 400
 
     try:
