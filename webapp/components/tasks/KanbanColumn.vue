@@ -3,13 +3,8 @@
     <h3 class="column-title">{{ title }}</h3>
     <hr />
     <div class="task-list">
-      <div
-        v-for="task in tasks"
-        :key="taskKey(task)"
-        class="task-card"
-        draggable="true"
-        @dragstart="handleDragStart($event, task)"
-      >
+      <div v-for="task in tasks" :key="taskKey(task)" class="task-card" draggable="true"
+        @dragstart="handleDragStart($event, task)">
         <div class="task-main">
           <div class="task-title">{{ taskTitle(task) }}</div>
           <div class="task-meta">
@@ -55,9 +50,10 @@ const taskState = (task: any) =>
 const handleDragStart = (event: DragEvent, task: any) => {
   // pegar apenas os campos necessários para transportar
   const payload = {
-    id: task.id || task.id_task,
+    id_task: task.id_task || task.id,
     nome_estado: task.nome_estado || task.nomeEstado || task.status || null
   }
+
   event.dataTransfer?.setData('application/json', JSON.stringify(payload))
   // permitir efeito de cópia/move
   event.dataTransfer!.effectAllowed = 'move'
