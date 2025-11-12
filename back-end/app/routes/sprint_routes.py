@@ -64,7 +64,7 @@ def deletar_sprint(id_sprint):
         sprint_rep.deletar_sprint(id_sprint)
         return jsonify({"mensagem": f"Sprint {id_sprint} deletada com sucesso."}), 200
 
-    except LookupError as e:
+    except ValueError as e:
         return jsonify({"erro": str(e)}), 404
 
     except ConnectionError as e:
