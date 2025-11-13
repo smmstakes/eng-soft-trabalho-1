@@ -28,7 +28,7 @@ DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
     "cpf": DADOS_USUARIO['cpf'],
-    "senha": "$JoaoSilva123"
+    "senha": "BOM1"
 }
 DADOS_SPRINT = {
     "meta": "Entregar o MVP",
@@ -199,4 +199,3 @@ def test_listar_tasks(client, setup_para_task):
             if id_sprint_criada_2: sprint_rep.deletar_sprint(id_sprint_criada_2)
         except Exception as e:
             print(f"AVISO: Falha ao limpar tasks/sprint 2 de listagem: {e}")
-
