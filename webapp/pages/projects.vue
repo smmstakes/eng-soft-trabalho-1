@@ -2,20 +2,9 @@
   <div class="container">
     <TopBar />
 
-    <Header
-      title="Meus Projetos"
-      description="Gerencie e acompanhe seus projetos de eventos"
-    >
-      <Button
-        @click="showJoinModal = true"
-        text="➜ Ingressar em um Projeto"
-        mode="black"
-      />
-      <Button
-        @click="showCreateModal = true"
-        text="+ Novo Projeto"
-        mode="black"
-      />
+    <Header title="Meus Projetos" description="Gerencie e acompanhe seus projetos de eventos">
+      <Button @click="showJoinModal = true" text="➜ Ingressar em um Projeto" mode="black" />
+      <Button @click="showCreateModal = true" text="+ Novo Projeto" mode="black" />
     </Header>
 
     <div v-if="projects.length === 0" class="empty-state">
@@ -25,15 +14,9 @@
 
     <!-- Grid de Projetos -->
     <div v-else class="projects-grid">
-      <ProjectCard
-        v-for="project in projects"
-        :key="project.id"
-        :id="project.id"
-        :icon="getIcon(project.titulo_projeto)"
-        :title="project.titulo_projeto"
-        :description="project.descricao"
-        @click="selectProject(project)"
-      />
+      <ProjectCard v-for="project in projects" :key="project.id" :id="project.id"
+        :icon="getIcon(project.titulo_projeto)" :title="project.titulo_projeto" :description="project.descricao"
+        @click="selectProject(project)" />
     </div>
 
     <!-- Modal Criar Projeto -->
@@ -41,31 +24,17 @@
       <form @submit.prevent="submitCreateProject">
         <div class="form-group">
           <label>Título do Projeto *</label>
-          <input
-            v-model="form.titulo_projeto"
-            type="text"
-            placeholder="Digite o título"
-            required
-          />
+          <input v-model="form.titulo_projeto" type="text" placeholder="Digite o título" required />
         </div>
 
         <div class="form-group">
           <label>Descrição do Projeto *</label>
-          <textarea
-            v-model="form.descricao"
-            placeholder="Digite a descrição"
-            required
-          />
+          <textarea v-model="form.descricao" placeholder="Digite a descrição" required />
         </div>
 
         <div class="form-group">
           <label>Senha do Projeto *</label>
-          <input
-            v-model="form.senha"
-            type="password"
-            placeholder="Crie uma senha para o projeto"
-            required
-          />
+          <input v-model="form.senha" type="password" placeholder="Crie uma senha para o projeto" required />
         </div>
 
         <Button text="Criar" mode="black" type="submit" />
@@ -77,22 +46,12 @@
       <form @submit.prevent="submitJoinProject">
         <div class="form-group">
           <label>ID do Projeto *</label>
-          <input
-            v-model="joinForm.id_projeto"
-            type="number"
-            placeholder="Digite o ID do projeto"
-            required
-          />
+          <input v-model="joinForm.id_projeto" type="number" placeholder="Digite o ID do projeto" required />
         </div>
 
         <div class="form-group">
           <label>Senha *</label>
-          <input
-            v-model="joinForm.senha"
-            type="password"
-            placeholder="Digite a senha do projeto"
-            required
-          />
+          <input v-model="joinForm.senha" type="password" placeholder="Digite a senha do projeto" required />
         </div>
 
         <div v-if="joinError" class="error">{{ joinError }}</div>
@@ -183,16 +142,14 @@ function getIcon(name: string) {
   padding: 12px 5%;
 }
 
-.empty-state {
-  text-align: center;
-  margin-top: 80px;
-  font-size: 1.2rem;
-  color: #666;
-}
+.empty-state p {
+  text-align: left;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 30px;
+  line-height: 30px;
 
-.empty-state p:first-child {
-  font-weight: 500;
-  margin-bottom: 6px;
+  color: #525252;
 }
 
 .error {
