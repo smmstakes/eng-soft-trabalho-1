@@ -147,7 +147,7 @@ const form = ref({
   titulo: "",
   objetivo: "",
   beneficios: "",
-  prioridade: 'Medium'
+  prioridade: 'Média'
 });
 
 const showEditBacklogModal = ref(false);
@@ -243,7 +243,7 @@ const submitCreateForm = async () => {
     backlogItems.value.push(novoItem);
 
     showCreateBacklogModal.value = false;
-    form.value = { titulo: "", objetivo: "", beneficios: "", prioridade: 'Medium' };
+    form.value = { titulo: "", objetivo: "", beneficios: "", prioridade: 'Média' };
     
     toast.success('Item do backlog criado com sucesso!');
 
