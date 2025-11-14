@@ -75,13 +75,13 @@
       <div class="form-group">
         <label>Prioridade *</label>
         <div class="priority-options">
-          <input type="radio" id="edit-priority-high" v-model="editForm.prioridade" value="High">
+          <input type="radio" id="edit-priority-high" v-model="editForm.prioridade" value="Alta">
           <label for="edit-priority-high" class="priority-label priority-high">Alta</label>
           
-          <input type="radio" id="edit-priority-medium" v-model="editForm.prioridade" value="Medium">
+          <input type="radio" id="edit-priority-medium" v-model="editForm.prioridade" value="Média">
           <label for="edit-priority-medium" class="priority-label priority-medium">Média</label>
           
-          <input type="radio" id="edit-priority-low" v-model="editForm.prioridade" value="Low">
+          <input type="radio" id="edit-priority-low" v-model="editForm.prioridade" value="Baixa">
           <label for="edit-priority-low" class="priority-label priority-low">Baixa</label>
         </div>
       </div>
