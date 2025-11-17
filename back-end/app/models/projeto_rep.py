@@ -6,7 +6,7 @@ import bcrypt
 PADRAO_TITULO = r"^[-,.~'a-zA-Z0-9\s]{2,20}$"
 PADRAO_DESCRICAO = 255
 PADRAO_CPF = r"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}$"
-PADRAO_SENHA = r"^(?=.*[A-Z])(?=.*[!@#$%&*])(?=.*[0-9])(?=.*[a-z]).{8,16}$" 
+PADRAO_SENHA = r"[0-9a-zA-Z]{1,5}$" 
 
 projeto = metadata.tables.get("projeto")
 if projeto is None:
@@ -30,8 +30,7 @@ def adicionar_projeto(titulo: str, descricao: str, senha: str, cpf_dono: str):
     
     if not re.match(PADRAO_SENHA, senha):
         raise ValueError ("Senha Inválida :\n"
-                            "- Deve conter pelo menos 1 letra Maiúscula, 1 letra Minúscula, 1 numérico e 1 caractere especial \n"
-                            "- Deve conter entre 8 à 15 caracteres.")
+                            "- Deve conter até quatro caracteres.")
     
     if not re.match(PADRAO_CPF, cpf_dono):
         raise ValueError ("CPF Inválido : \n"
@@ -122,8 +121,7 @@ def atualizar_projeto(projeto_id: int, novo_titulo = None, nova_senha=None, nova
     if nova_senha:
         if not re.match(PADRAO_SENHA, nova_senha):
             raise ValueError ("Senha Inválida :\n"
-                            "- Deve conter pelo menos 1 letra Maiúscula, 1 letra Minúscula, 1 numérico e 1 caractere especial \n"
-                            "- Deve conter entre 8 à 15 caracteres.")
+                            "- Deve conter entre quatro caracteres.")
         senha_hash = bcrypt.hashpw(nova_senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         novos_valores["senha"] = senha_hash
 

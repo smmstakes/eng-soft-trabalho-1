@@ -29,7 +29,7 @@ DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
     "cpf": DADOS_USUARIO['cpf'],
-    "senha": "$JoaoSilva123"
+    "senha": "A123"
 }
 DADOS_SPRINT = {
     "meta": "Entregar o MVP",

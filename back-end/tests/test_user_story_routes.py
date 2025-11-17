@@ -28,7 +28,7 @@ DADOS_PROJETO = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
     "cpf": DADOS_USUARIO['cpf'],
-    "senha": "$JoaoSilva123"
+    "senha": "1234"
 }
 
 DADOS_USER_STORY = {

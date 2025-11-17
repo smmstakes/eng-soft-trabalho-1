@@ -28,19 +28,19 @@ DADOS_USUARIO_ENTRAR = {
     "email": "felipe.duarte@hotmail.com",
     "nome": "Felipe Duarte",
     "senha": "F3lipeDuarte!",
-    "senha_projeto": "!MeuProjeto123",
+    "senha_projeto": "1234",
     "cargo": "Desenvolvedor"
 }
 DADOS_PROJETO_TESTE1 = {
     "titulo_projeto": "PROJETO 1 - Joao",
     "descricao": "Teste no banco de dados real",
-    "senha": "!MeuProjeto123",
+    "senha": "1234",
     "cpf": DADOS_USUARIO_DONO['cpf']
 }
 DADOS_PROJETO_TESTE2 = {
     "titulo_projeto": "PROJETO 2 - Joao",
     "descricao": "Teste rotas do projeto",
-    "senha": "!MeuProjeto123",
+    "senha": "1234",
     "cpf": DADOS_USUARIO_DONO['cpf']
 }
 
